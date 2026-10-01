@@ -1,271 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de" dir="ltr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VIDO IPv4">
-<title>VIDO Technology — IPv4</title>
+<title>VIDO Technology – IPv4</title>
 <style>
-:root{
- --bg:#050b16;--panel:rgba(10,19,35,.88);--panel2:rgba(14,27,48,.82);
- --line:rgba(148,163,184,.16);--text:#f8fafc;--muted:#94a3b8;
- --cyan:#22d3ee;--blue:#3b82f6;--green:#34d399;--red:#fb7185;--amber:#fbbf24;
- --shadow:0 24px 70px rgba(0,0,0,.35)
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:
-linear-gradient(rgba(2,6,23,.72),rgba(2,6,23,.82)),
-var(--vido-bg) center center/cover fixed no-repeat;overflow-x:hidden;transition:background-image .8s ease}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.10;background-image:linear-gradient(rgba(148,163,184,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.08) 1px,transparent 1px);background-size:38px 38px}
-.wrap{max-width:980px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom));position:relative;z-index:1}
-.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:18px 4px 20px}
-.brand{color:var(--cyan);font-size:12px;font-weight:950;letter-spacing:2.6px}
-h1{margin:6px 0 0;font-size:clamp(28px,6vw,44px);line-height:1.08;letter-spacing:-1.3px}
-.subtitle{color:#cbd5e1;margin-top:9px;font-size:14px;font-weight:700}
-.badge{border:1px solid rgba(34,211,238,.25);background:rgba(34,211,238,.07);color:#a5f3fc;border-radius:999px;padding:9px 12px;font-size:12px;font-weight:900;white-space:nowrap}
-.card{background:linear-gradient(145deg,rgba(10,20,37,.92),rgba(7,16,30,.78));border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}
-.tab{background:rgba(148,163,184,.08);color:#cbd5e1;border:1px solid var(--line);padding:12px;border-radius:13px;font-weight:900}
-.tab.active{background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(59,130,246,.2));border-color:rgba(34,211,238,.4);color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
-select,input{width:100%;min-height:49px;border:1px solid rgba(148,163,184,.22);border-radius:13px;background:#f8fafc;color:#0f172a;padding:12px 14px;font-size:16px;outline:none}
-input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
-button{min-height:47px;border:0;border-radius:13px;padding:12px 15px;font-weight:900;font-size:14px;cursor:pointer}
-.primary{color:#fff;background:linear-gradient(135deg,#06b6d4,#2563eb);box-shadow:0 12px 28px rgba(37,99,235,.22)}
-.secondary{background:#eef2f7;color:#0f172a}.ghost{background:rgba(148,163,184,.09);color:#e2e8f0;border:1px solid var(--line)}
-button:active{transform:scale(.985)}
-.progress-head{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;font-weight:900}
-.bar{height:8px;background:rgba(148,163,184,.12);border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));width:0%;transition:.25s}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.stat{background:rgba(2,8,23,.5);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}.stat span{display:block;color:var(--muted);font-size:10px;font-weight:900}.stat b{font-size:20px;display:block;margin-top:3px}
-.question-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:900}.question{font-size:clamp(20px,4vw,28px);line-height:1.5;font-weight:950;margin:10px 0}.ip{direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e0f2fe;font-size:clamp(15px,3.5vw,20px);line-height:1.65;word-break:break-word}
-.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{margin-top:10px;padding:11px 12px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18);color:#fde68a;line-height:1.8}
-.result{line-height:1.9}.ok{color:var(--green);font-weight:950}.bad{color:var(--red);font-weight:950}.steps{direction:rtl;text-align:right;white-space:pre-wrap;margin-top:10px;padding:14px;border-radius:13px;background:#020817;border:1px solid var(--line);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.85}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini-title{font-weight:950;margin-bottom:10px}.mini{color:#cbd5e1;font-size:13px;line-height:1.8}
-.hidden{display:none!important}.footer{text-align:center;color:#64748b;font-size:11px;padding:18px}.danger{color:#fecaca}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px;z-index:10}.modal.open{display:flex}.sheet{width:min(700px,100%);background:#081221;border:1px solid var(--line);border-radius:20px;padding:18px;max-height:80vh;overflow:auto}.mistake{padding:12px;border:1px solid var(--line);border-radius:13px;margin:8px 0;background:rgba(148,163,184,.05)}.mistake b{display:block;margin-bottom:5px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:rgba(34,211,238,.1);color:#a5f3fc;font-size:10px;font-weight:900}
-@media(max-width:700px){.wrap{padding-left:10px;padding-right:10px}.hero{display:block}.badge{display:inline-block;margin-top:12px}.grid,.two,.answer-grid,.actions{grid-template-columns:1fr}.card{padding:15px;border-radius:17px}.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:29px}}
+:root{--bg:#07111f;--card:rgba(7,17,31,.82);--card2:rgba(9,24,43,.78);--text:#f8fafc;--muted:#a9b7ca;--accent:#38bdf8;--accent2:#2563eb;--ok:#4ade80;--bad:#fb7185;--border:rgba(255,255,255,.13);--shadow:0 20px 60px rgba(0,0,0,.38)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:#020617 center/cover fixed no-repeat;transition:background-image 1.1s ease}body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(14,165,233,.13),transparent 35%),linear-gradient(rgba(2,6,23,.18),rgba(2,6,23,.22));z-index:-1}.wrap{max-width:1100px;margin:auto;padding:22px 16px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.brand{font-weight:900;letter-spacing:.18em;color:#22d3ee;font-size:13px}.title{font-size:clamp(34px,6vw,58px);font-weight:950;line-height:1;margin:7px 0}.subtitle{color:var(--muted);font-weight:650}.langs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.langs button,.btn,.select,select,input{border:1px solid var(--border);border-radius:12px;background:rgba(15,30,48,.82);color:var(--text)}button{font:inherit}.langs button{padding:8px 11px;cursor:pointer;font-weight:800}.langs button.active{background:linear-gradient(135deg,#0891b2,#2563eb);border-color:#38bdf8}.panel{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:18px;margin-top:14px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tab{padding:14px;border-radius:13px;border:1px solid var(--border);background:rgba(22,39,60,.75);color:var(--text);font-weight:900;cursor:pointer}.tab.active{background:linear-gradient(135deg,rgba(8,145,178,.6),rgba(37,99,235,.65));border-color:#38bdf8}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;color:var(--muted);font-size:13px;font-weight:800;margin:0 0 7px}.field select,.field input{width:100%;padding:12px 13px;font-size:15px;outline:none}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.btn{padding:13px 15px;font-weight:900;cursor:pointer}.btn.primary{border:0;background:linear-gradient(135deg,#06b6d4,#2563eb)}.btn.secondary{background:rgba(22,39,60,.72)}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}.stat{border:1px solid var(--border);border-radius:14px;padding:11px;text-align:center;background:rgba(3,12,24,.42)}.stat small{display:block;color:var(--muted);font-weight:700;font-size:11px}.stat strong{font-size:20px}.progress{height:8px;background:rgba(148,163,184,.15);border-radius:999px;overflow:hidden;margin:10px 0}.progress>div{height:100%;background:linear-gradient(90deg,#22d3ee,#2563eb);width:0;transition:width .3s}.badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(34,211,238,.13);color:#67e8f9;font-size:11px;font-weight:900}.question-head{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:12px;font-weight:800}.question{font-size:clamp(22px,3vw,34px);font-weight:950;line-height:1.25;margin:14px 0 8px}.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(0,0,0,.27);border:1px solid var(--border);padding:13px;border-radius:13px;color:#dbeafe;font-size:16px;white-space:pre-wrap}.answer{margin-top:14px}.answer input{background:rgba(248,250,252,.96);color:#0f172a;font-weight:800}.choices{display:grid;gap:9px;margin-top:14px}.choice{padding:13px;border:1px solid var(--border);background:rgba(18,35,54,.78);border-radius:12px;text-align:start;cursor:pointer;color:var(--text);font-weight:800}.choice.selected{border-color:#38bdf8;background:rgba(14,165,233,.18)}.feedback{margin-top:13px;padding:13px;border-radius:13px;display:none;font-weight:800}.feedback.ok{display:block;background:rgba(34,197,94,.12);border:1px solid rgba(74,222,128,.4);color:#bbf7d0}.feedback.bad{display:block;background:rgba(244,63,94,.12);border:1px solid rgba(251,113,133,.4);color:#fecdd3}.solution{display:none;margin-top:12px;padding:13px;border-radius:13px;background:rgba(2,6,23,.42);border:1px solid var(--border)}.solution.show{display:block}.step{padding:7px 0;color:#dbeafe}.timer{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#fde68a;font-size:17px;font-weight:900}.footer{text-align:center;color:#94a3b8;font-size:12px;margin-top:18px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.open{display:flex}.modalbox{max-width:850px;width:100%;max-height:88vh;overflow:auto;background:#081423;border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:var(--shadow)}.modalhead{display:flex;justify-content:space-between;align-items:center}.mistake{padding:11px;border-bottom:1px solid var(--border)}.small{font-size:12px;color:var(--muted)}.ltr{direction:ltr;text-align:left}.rtl{text-align:right}
+@media(max-width:760px){.grid,.actions{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.langs{justify-content:flex-start}.wrap{padding:16px 10px 40px}.question{font-size:25px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="hero">
- <div><div class="brand">VIDO TECHNOLOGY</div><h1>IPv4</h1><div class="subtitle">Wael Alaya · Lernen, trainieren, selbst testen</div></div>
- <div class="badge">IPv4 • Subnetting</div>
-</header>
+  <header class="top">
+    <div><div class="brand">VIDO TECHNOLOGY</div><div class="title">IPv4</div><div class="subtitle" id="subtitle"></div></div>
+    <div class="langs" aria-label="Language"><button data-lang="de">DE</button><button data-lang="en">EN</button><button data-lang="ar">AR</button></div>
+  </header>
 
-<section class="card">
- <div class="tabs">
-  <button class="tab active" id="learnTab">Lernmodus</button>
-  <button class="tab" id="examTab">Prüfungsmodus</button>
- </div>
- <div class="grid">
-  <div class="field"><label>Trainingsart</label>
-   <select id="mode">
-    <option value="network">Network Address</option><option value="broadcast">Broadcast Address</option>
-    <option value="block">Block Size</option><option value="first">Erster Host</option>
-    <option value="last">Letzter Host</option><option value="hosts">Nutzbare Hosts</option>
-    <option value="all">Komplette Aufgabe</option><option value="ihk">IHK-orientiertes Training</option>
-   </select>
-  </div>
-  <div class="field"><label>Schwierigkeitsgrad</label>
-   <select id="difficulty"><option value="easy">Leicht — /24 bis /26</option><option value="medium">Mittel — /27 bis /28</option><option value="hard">Schwer — /29 bis /30</option><option value="ihk">IHK-orientiert — /24 bis /30</option></select>
-  </div>
- </div>
- <div class="grid" style="margin-top:12px">
-  <div class="field"><label>Anzahl der Fragen</label><select id="roundSize"><option>10</option><option>20</option><option>30</option></select></div>
-  <div class="field"><label>Ergebnis</label><div id="scoreBox" style="min-height:49px;display:flex;align-items:center;padding:12px;border:1px solid var(--line);border-radius:13px;background:rgba(2,8,18,.35);font-weight:950">0 / 0</div></div>
- </div>
- <div class="actions">
-  <button class="primary" id="newBtn">Neue Aufgabe</button>
-  <button class="secondary" id="resetBtn">Runde zurücksetzen</button>
- </div>
- <div class="actions">
-  <button class="ghost" id="mistakesBtn">Meine Fehler</button>
-  <button class="ghost" id="calcBtn">Subnetting-Rechner</button>
- </div>
-</section>
+  <section class="panel">
+    <div class="tabs"><button id="learnTab" class="tab active"></button><button id="examTab" class="tab"></button></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="field"><label id="topicLabel"></label><select id="topic"></select></div>
+      <div class="field"><label id="typeLabel"></label><select id="qtype"></select></div>
+      <div class="field"><label id="levelLabel"></label><select id="level"></select></div>
+      <div class="field"><label id="countLabel"></label><select id="count"><option>10</option><option>20</option><option>30</option></select></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="newBtn"></button><button class="btn secondary" id="resetBtn"></button></div>
+    <div class="actions"><button class="btn secondary" id="mistakesBtn"></button><button class="btn secondary" id="calcBtn"></button></div>
+    <div class="stats">
+      <div class="stat"><small id="correctLbl"></small><strong id="correct">0</strong></div><div class="stat"><small id="attemptsLbl"></small><strong id="attempts">0</strong></div><div class="stat"><small id="rateLbl"></small><strong id="rate">0%</strong></div><div class="stat"><small id="streakLbl"></small><strong id="streak">0</strong></div><div class="stat"><small id="xpLbl"></small><strong id="xp">0</strong></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </section>
 
-<section class="card">
- <div class="progress-head"><span>Rundenfortschritt</span><span id="progressText">0 / 10</span></div>
- <div class="bar"><i id="progressBar"></i></div>
- <div class="stats">
-  <div class="stat"><span>Richtig</span><b id="correct">0</b></div>
-  <div class="stat"><span>Versuche</span><b id="attempts">0</b></div>
-  <div class="stat"><span>Quote</span><b id="rate">0%</b></div>
-  <div class="stat"><span>Richtige Serie</span><b id="streak">0</b></div>
- </div>
-</section>
+  <section class="panel">
+    <div class="question-head"><span class="badge" id="modeBadge"></span><span><span id="questionNo"></span> · <span class="timer" id="timer"></span></span></div>
+    <div class="question" id="question"></div>
+    <div class="code" id="data"></div>
+    <div class="answer" id="answerArea"></div>
+    <div class="actions"><button class="btn primary" id="checkBtn"></button><button class="btn secondary" id="hintBtn"></button></div>
+    <div id="feedback" class="feedback"></div>
+    <div id="solution" class="solution"></div>
+  </section>
 
-<section class="card">
- <div class="question-meta"><span id="questionNo">Frage 1</span><span class="pill" id="modePill">Training</span></div>
- <div class="question" id="question">Klicke auf „Neue Aufgabe“, um das Training zu starten.</div>
- <div class="ip" id="given"></div>
-</section>
-
-<section class="card">
- <div class="answer-grid">
-  <div class="field"><label>Deine Antwort</label><input id="answer" placeholder="Beispiel: 192.168.1.64" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
-  <div class="field hidden" id="extraWrap"><label>Zweite Antwort</label><input id="answer2" placeholder="Beispiel: 192.168.1.127" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
- </div>
- <div class="actions">
-  <button class="primary" id="checkBtn">Antwort prüfen</button>
-  <button class="ghost" id="hintBtn">Hinweis</button>
- </div>
- <div id="hint" class="hint hidden"></div>
-</section>
-
-<section class="card result" id="result">Nach der Prüfung erscheinen hier Ergebnis und Schritt-für-Schritt-Erklärung.</section>
-
-<section class="card">
- <div class="two">
-  <div><div class="mini-title">Schnellmethode</div><div class="mini">Prefix → Subnet Mask → Block Size → Subnetzbereich → Network → Broadcast → Hosts</div></div>
-  <div><div class="mini-title">Prüfungsbegriffe</div><div class="mini">Network Address · Broadcast Address · Subnet Mask · Prefix · Host Range · Usable Hosts</div></div>
- </div>
-</section>
-
-<footer class="footer">VIDO Technology · IPv4 Training · <strong>Wael Alaya</strong></footer>
+  <div class="footer">VIDO Technology · IPv4 & Subnetting · IHK-orientiertes Training</div>
 </div>
 
-<div class="modal" id="mistakesModal"><div class="sheet"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">Meine Fehler</h2><button class="ghost" onclick="closeModal('mistakesModal')">Schließen</button></div><div id="mistakesList" style="margin-top:12px"></div></div></div>
-
-<div class="modal" id="calcModal"><div class="sheet"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">Subnetting-Rechner</h2><button class="ghost" onclick="closeModal('calcModal')">Schließen</button></div>
-<div class="field" style="margin-top:14px"><label>IP / Prefix</label><input id="calcInput" placeholder="192.168.10.77/26" autocomplete="off" autocapitalize="none"></div>
-<button class="primary" id="calcRun" style="margin-top:10px">Berechnen</button><div id="calcResult" class="result" style="margin-top:12px"></div>
-</div></div>
+<div class="modal" id="modal"><div class="modalbox"><div class="modalhead"><h2 id="modalTitle"></h2><button class="btn secondary" id="closeModal">×</button></div><div id="modalBody"></div></div></div>
 
 <script>
-const $=id=>document.getElementById(id);
-let task=null,locked=false,correct=0,attempts=0,roundCount=0,roundTotal=10,streak=0,learnMode=true;
-const bank=[
-{q:"Ein Gerät hat 192.168.10.77/26. Was ist die Network Address?",a:"192.168.10.64",kind:"text"},
-{q:"Ein Gerät hat 192.168.20.130/27. Was ist die Broadcast Address?",a:"192.168.20.159",kind:"text"},
-{q:"Die Subnet Mask 255.255.255.240. Wie viele Usable Hosts?",a:"14",kind:"number"},
-{q:"Das Netzwerk benötigt 30 Usable Hosts. Welcher kleinste Prefix ist geeignet?",a:"/27",kind:"prefix"},
-{q:"192.168.50.0/24 wird in /27 aufgeteilt. Wie viele Subnetze entstehen?",a:"8",kind:"number"},
-{q:"Welche Host-Adresse ist innerhalb von 10.20.30.64/28 gültig?",a:"10.20.30.65",kind:"text"},
-{q:"172.16.5.200/27. Was ist die Network Address?",a:"172.16.5.192",kind:"text"},
-{q:"192.168.100.96/28. Was ist der letzte gültige Host?",a:"192.168.100.110",kind:"text"},
-{q:"10.10.10.145/28. Was ist die Broadcast Address?",a:"10.10.10.159",kind:"text"},
-{q:"Das Netzwerk benötigt 6 Usable Hosts. Welcher kleinste passende Prefix ist geeignet?",a:"/29",kind:"prefix"}
-];
-function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function prefixFor(d){return d==="easy"?rand(24,26):d==="medium"?rand(27,28):d==="hard"?rand(29,30):rand(24,30)}
-function maskFromPrefix(p){return 256-2**(32-p)}
-function norm(s){return String(s||"").trim().replace(/\s+/g,"").toLowerCase()}
-function calc(ip,p){
- const parts=ip.split(".").map(Number); if(parts.length!==4||parts.some(x=>x<0||x>255||!Number.isInteger(x))||p<0||p>32)return null;
- const block=2**(32-p), last=Math.floor(parts[3]/block)*block, net=[parts[0],parts[1],parts[2],last].join(".");
- const bc=[parts[0],parts[1],parts[2],last+block-1].join(".");
- return {ip,p,mask:maskFromPrefix(p),block,network:net,broadcast:bc,first:block>2?net.replace(/\d+$/,"")+(last+1):"—",lastHost:block>2?bc.replace(/\d+$/,"")+(last+block-2):"—",hosts:Math.max(0,block-2)};
-}
-function dynamicTask(){
- const p=prefixFor($("difficulty").value), block=2**(32-p), last=rand(0,Math.floor(255/block))*block, host=rand(1,Math.max(1,block-2));
- const base=`${rand(10,10)}.${rand(0,254)}.${rand(0,254)}`, ip=`${base}.${last+host}`, c=calc(ip,p);
- task={mode:$("mode").value,...c,base,ip,prefix:p};
-}
-function ihkTask(){const q=bank[rand(0,bank.length-1)];task={mode:"ihk",ihk:q};}
-function makeTask(){
- locked=false;roundTotal=Number($("roundSize").value);
- if($("mode").value==="ihk")ihkTask();else dynamicTask();
- $("answer").value="";$("answer2").value="";$("hint").classList.add("hidden");$("result").textContent=learnMode?"Nach der Prüfung erscheinen hier Ergebnis und Schritt-für-Schritt-Erklärung.":"Prüfungsmodus: Die Lösung wird erst nach der Prüfung angezeigt.";
- $("extraWrap").classList.toggle("hidden",task.mode!=="all");
- renderTask();updateProgress();
-}
-function renderTask(){
- if(task.mode==="ihk"){$("question").textContent=task.ihk.q;$("given").textContent="IHK-orientierte Aufgabe · Originalübung";$("modePill").textContent="IHK-oriented";return}
- const labels={network:"Was ist die Network Address?",broadcast:"Was ist die Broadcast Address?",block:"Was ist die Block Size?",first:"Was ist der erste Host?",last:"Was ist der letzte Host?",hosts:"Wie viele Usable Hosts?",all:"Berechne Network Address und Broadcast Address."};
- $("question").textContent=labels[task.mode];$("given").textContent=`IP Address: ${task.ip}  |  Subnet Mask: 255.255.255.${task.mask}  (/${task.p})`;$("modePill").textContent=learnMode?"Lernen":"Prüfung";
-}
-function explanation(){
- if(task.mode==="ihk")return `Lösung:\n${task.ihk.a}\n\nDiese Übungsaufgabe basiert auf IPv4- und Subnetting-Kenntnissen.`;
- const starts=Array.from({length:256/task.block},(_,i)=>i*task.block).join(" / ");
- return `1. Prefix = /${task.p}\n2. Subnet Mask = 255.255.255.${task.mask}\n3. Block Size = 256 − ${task.mask} = ${task.block}\n4. Subnetzanfänge: ${starts}\n5. Network Address = ${task.network}\n6. Broadcast Address = ${task.broadcast}\n7. Host Range = ${task.first} – ${task.lastHost}\n8. Usable Hosts = ${task.hosts}`;
-}
-function expected(){
- if(task.mode==="ihk")return task.ihk.a;
- if(task.mode==="network")return task.network;
- if(task.mode==="broadcast")return task.broadcast;
- if(task.mode==="block")return String(task.block);
- if(task.mode==="first")return task.first;
- if(task.mode==="last")return task.lastHost;
- if(task.mode==="hosts")return String(task.hosts);
- return null;
-}
-function check(){
- if(!task||locked)return;
- attempts++;let ok=false, ans=norm($("answer").value), expectedText=expected();
- if(task.mode==="all")ok=ans===norm(task.network)&&norm($("answer2").value)===norm(task.broadcast);
- else ok=ans===norm(expectedText);
- locked=true;roundCount++;
- if(ok){correct++;streak++;$("result").innerHTML=`<span class="ok">✓ Richtige Antwort</span><div class="steps">${learnMode?explanation():"Antwort erfasst. Im Prüfungsmodus kannst du zur nächsten Aufgabe wechseln."}</div>`}
- else{streak=0;saveMistake();$("result").innerHTML=`<span class="bad">✗ Falsche Antwort</span><br>Richtige Antwort: <b>${task.mode==="all"?task.network+" / "+task.broadcast:expectedText}</b>${learnMode?`<div class="steps">${explanation()}</div>`:""}`
- }
- updateStats();updateProgress();
-}
-function hint(){
- if(!task)return;$("hint").classList.remove("hidden");
- if(task.mode==="ihk")$("hint").textContent="Beginne mit der Aufgabenstellung: Network, Broadcast oder Hosts. Bestimme dann Prefix und Block Size. Suche nicht direkt nach der Lösung.";
- else $("hint").textContent=`Beginne mit /${task.p}: Berechne zuerst die Subnet Mask und danach Block Size = 256 − Mask-Wert im relevanten Oktett.`;
-}
-function updateStats(){
- $("correct").textContent=correct;$("attempts").textContent=attempts;$("rate").textContent=attempts?Math.round(correct/attempts*100)+"%":"0%";$("streak").textContent=streak;$("scoreBox").textContent=`${correct} / ${attempts}`;
-}
-function updateProgress(){
- const done=Math.min(roundCount,roundTotal), pct=Math.min(100,done/roundTotal*100);
- $("progressText").textContent=`${done} / ${roundTotal}`;$("progressBar").style.width=pct+"%";$("questionNo").textContent=`Frage ${Math.min(done+1,roundTotal)} / ${roundTotal}`;
- if(done>=roundTotal&&attempts){$("result").innerHTML=`<b>Runde beendet</b><br>Dein Ergebnis: ${correct} von ${attempts} (${Math.round(correct/attempts*100)}%).<br><span class="small">Setze die Runde zurück oder starte eine neue Runde.</span>`}
-}
-function resetRound(){correct=0;attempts=0;roundCount=0;streak=0;updateStats();makeTask()}
-function setMode(exam){
- learnMode=!exam;$("learnTab").classList.toggle("active",learnMode);$("examTab").classList.toggle("active",!learnMode);makeTask();
-}
-function saveMistake(){
- const list=JSON.parse(localStorage.getItem("vido_ipv4_mistakes")||"[]");
- const item=task.mode==="ihk"?{q:task.ihk.q,a:task.ihk.a}:{q:$("question").textContent,given:$("given").textContent,a:expected()};
- list.unshift(item);localStorage.setItem("vido_ipv4_mistakes",JSON.stringify(list.slice(0,50)));
-}
-function openMistakes(){
- const list=JSON.parse(localStorage.getItem("vido_ipv4_mistakes")||"[]"), box=$("mistakesList");
- box.innerHTML=list.length?list.map((x,i)=>`<div class="mistake"><b>${i+1}. ${x.q}</b><span class="small">Antwort: ${x.a}</span></div>`).join(""):`<div class="small">Noch keine Fehler gespeichert.</div>`;
- $("mistakesModal").classList.add("open")
-}
-function closeModal(id){$(id).classList.remove("open")}
-function runCalc(){
- const m=$("calcInput").value.trim().match(/^(\d+\.\d+\.\d+\.\d+)\/(\d+)$/);if(!m){$("calcResult").innerHTML="<span class='bad'>Eingabeformat: 192.168.10.77/26</span>";return}
- const c=calc(m[1],Number(m[2]));if(!c){$("calcResult").innerHTML="<span class='bad'>IP-Adresse oder Prefix ist ungültig.</span>";return}
- $("calcResult").innerHTML=`<div class="steps">IP Address: ${c.ip}/${c.p}\nSubnet Mask: 255.255.255.${c.mask}\nBlock Size: ${c.block}\nNetwork Address: ${c.network}\nBroadcast Address: ${c.broadcast}\nHost Range: ${c.first} – ${c.lastHost}\nUsable Hosts: ${c.hosts}</div>`
-}
-$("newBtn").onclick=makeTask;$("resetBtn").onclick=resetRound;$("checkBtn").onclick=check;$("hintBtn").onclick=hint;
-$("learnTab").onclick=()=>setMode(false);$("examTab").onclick=()=>setMode(true);$("mistakesBtn").onclick=openMistakes;
-$("calcBtn").onclick=()=>{$("calcModal").classList.add("open");$("calcInput").focus()};$("calcRun").onclick=runCalc;
-$("answer").addEventListener("keydown",e=>{if(e.key==="Enter")check()});$("answer2").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
-$("mode").onchange=makeTask;$("difficulty").onchange=makeTask;$("roundSize").onchange=resetRound;
-makeTask();updateStats();
+const BG=['syria-flag-background.jpg','syria-ruins-background.jpg','syria-sunset-background.jpg','syria-valley-background.jpg','binary-background.jpg','network-background.jpg','circuit-background.jpg','terminal-background.jpg'];
+let bgIndex=0;function setBG(i){bgIndex=(i+BG.length)%BG.length;document.body.style.backgroundImage=`linear-gradient(rgba(2,8,18,.62),rgba(2,8,18,.72)),url('${BG[bgIndex]}')`;localStorage.setItem('vidoBgIndex',bgIndex)}
+const savedBg=Number(localStorage.getItem('vidoBgIndex')); setBG(Number.isFinite(savedBg)?savedBg:0); setInterval(()=>setBG(bgIndex+1),60000);
+BG.forEach(x=>{const i=new Image();i.src=x});
 
-// VIDO Technology — automatic cyber background rotation
-const vidoBackgrounds=[
-  "./binary-background.jpg",
-  "./network-background.jpg",
-  "./circuit-background.jpg",
-  "./terminal-background.jpg"
-];
-let vidoBgIndex=0;
-const vidoBgPreload=vidoBackgrounds.map(src=>{const img=new Image();img.src=src;return img;});
-function setVidoBackground(i){
-  vidoBgIndex=i % vidoBackgrounds.length;
-  const src=vidoBackgrounds[vidoBgIndex];
-  document.body.style.backgroundImage =
-    `linear-gradient(rgba(2,6,23,.72),rgba(2,6,23,.82)),url("${src}")`;
-}
-setVidoBackground(0);
-setInterval(()=>setVidoBackground(vidoBgIndex+1),60000);
+const T={
+de:{dir:'ltr',subtitle:'Lernen · Üben · Prüfen · IPv4 vollständig beherrschen',learn:'Lernmodus',exam:'Prüfungsmodus',topic:'Thema',type:'Fragetyp',level:'Schwierigkeit',count:'Fragen pro Runde',new:'Neue Frage',reset:'Runde zurücksetzen',mistakes:'Meine Fehler',calc:'Subnetting-Rechner',correct:'Richtig',attempts:'Versuche',rate:'Quote',streak:'Serie richtig',xp:'XP',question:'Frage',check:'Antwort prüfen',hint:'Hinweis',learnMode:'Lernen',examMode:'Prüfung',answer:'Antwort eingeben …',next:'Nächste Frage',time:'Zeit',topics:{all:'Gemischt – alle IPv4-Themen',network:'Network Address',broadcast:'Broadcast Address',first:'First Host',last:'Last Host',range:'Host Range',usable:'Usable Hosts',block:'Block Size',mask:'Subnet Mask ↔ Prefix',subnets:'Number of Subnets',hosts:'Number of Hosts',subnetting:'Subnetting',cidr:'CIDR',vlsm:'VLSM',classes:'IP Address Classes',private:'Private / Public IP',special:'Special Addresses',gateway:'Default Gateway',complete:'Complete Subnetting Task'},types:{mixed:'Gemischt',direct:'Freie Eingabe',mc:'Multiple Choice',fill:'Lückentext',complete:'Komplettaufgabe'},levels:{easy:'Grundlagen /24–/26',mid:'Subnetting /27–/28',hard:'Fortgeschritten /29–/30',ihk:'IHK Challenge /24–/30'},correctMsg:'Richtig!',wrongMsg:'Nicht richtig.',hintMsg:'Tipp',solution:'Lösung & Rechenweg',finished:'Runde beendet',mistakeEmpty:'Noch keine Fehler gespeichert.',calcTitle:'Subnetting-Rechner',close:'Schließen',calcIp:'IP-Adresse mit Prefix',calcGo:'Berechnen',invalid:'Ungültige Eingabe.',vlsmHint:'Sortiere die Anforderungen von groß nach klein und wähle für jede Anforderung den kleinsten passenden Prefix.',examDone:'Prüfung beendet. Ergebnis:',timeUp:'Zeit abgelaufen.'},
+en:{dir:'ltr',subtitle:'Learn · Practice · Test · Master IPv4',learn:'Learning Mode',exam:'Exam Mode',topic:'Topic',type:'Question type',level:'Difficulty',count:'Questions per round',new:'New Question',reset:'Reset Round',mistakes:'My Mistakes',calc:'Subnet Calculator',correct:'Correct',attempts:'Attempts',rate:'Accuracy',streak:'Correct Streak',xp:'XP',question:'Question',check:'Check Answer',hint:'Hint',learnMode:'Learning',examMode:'Exam',answer:'Enter answer …',next:'Next Question',time:'Time',topics:{all:'Mixed – all IPv4 topics',network:'Network Address',broadcast:'Broadcast Address',first:'First Host',last:'Last Host',range:'Host Range',usable:'Usable Hosts',block:'Block Size',mask:'Subnet Mask ↔ Prefix',subnets:'Number of Subnets',hosts:'Number of Hosts',subnetting:'Subnetting',cidr:'CIDR',vlsm:'VLSM',classes:'IP Address Classes',private:'Private / Public IP',special:'Special Addresses',gateway:'Default Gateway',complete:'Complete Subnetting Task'},types:{mixed:'Mixed',direct:'Free Input',mc:'Multiple Choice',fill:'Fill in the Blank',complete:'Complete Task'},levels:{easy:'Basics /24–/26',mid:'Subnetting /27–/28',hard:'Advanced /29–/30',ihk:'IHK Challenge /24–/30'},correctMsg:'Correct!',wrongMsg:'Incorrect.',hintMsg:'Hint',solution:'Solution & Steps',finished:'Round finished',mistakeEmpty:'No mistakes saved yet.',calcTitle:'Subnet Calculator',close:'Close',calcIp:'IP address with prefix',calcGo:'Calculate',invalid:'Invalid input.',vlsmHint:'Sort requirements from largest to smallest and choose the smallest suitable prefix for each requirement.',examDone:'Exam finished. Result:',timeUp:'Time is up.'},
+ar:{dir:'rtl',subtitle:'تعلّم · تدرب · اختبر نفسك · أتقن IPv4',learn:'وضع التعلّم',exam:'وضع الاختبار',topic:'الموضوع',type:'نوع السؤال',level:'المستوى',count:'عدد الأسئلة',new:'سؤال جديد',reset:'إعادة الجولة',mistakes:'أخطائي',calc:'حاسبة Subnetting',correct:'صحيح',attempts:'المحاولات',rate:'النسبة',streak:'السلسلة الصحيحة',xp:'XP',question:'السؤال',check:'تحقق من الإجابة',hint:'تلميح',learnMode:'تعلّم',examMode:'اختبار',answer:'اكتب الإجابة …',next:'السؤال التالي',time:'الوقت',topics:{all:'مختلط – كل مواضيع IPv4',network:'Network Address',broadcast:'Broadcast Address',first:'First Host',last:'Last Host',range:'Host Range',usable:'Usable Hosts',block:'Block Size',mask:'Subnet Mask ↔ Prefix',subnets:'Number of Subnets',hosts:'Number of Hosts',subnetting:'Subnetting',cidr:'CIDR',vlsm:'VLSM',classes:'IP Address Classes',private:'Private / Public IP',special:'Special Addresses',gateway:'Default Gateway',complete:'Complete Subnetting Task'},types:{mixed:'مختلط',direct:'إجابة مباشرة',mc:'اختيار متعدد',fill:'ملء الفراغ',complete:'مهمة كاملة'},levels:{easy:'أساسيات /24–/26',mid:'Subnetting /27–/28',hard:'متقدم /29–/30',ihk:'تحدي IHK /24–/30'},correctMsg:'إجابة صحيحة!',wrongMsg:'الإجابة غير صحيحة.',hintMsg:'تلميح',solution:'الحل والخطوات',finished:'انتهت الجولة',mistakeEmpty:'لا توجد أخطاء محفوظة بعد.',calcTitle:'حاسبة Subnetting',close:'إغلاق',calcIp:'IP مع Prefix',calcGo:'احسب',invalid:'إدخال غير صالح.',vlsmHint:'رتّب المتطلبات من الأكبر إلى الأصغر واختر أصغر Prefix مناسب لكل متطلب.',examDone:'انتهى الاختبار. النتيجة:',timeUp:'انتهى الوقت.'}}
+
+const topicKeys=Object.keys(T.de.topics); const typeKeys=Object.keys(T.de.types); const levelKeys=Object.keys(T.de.levels);
+const masks={0:0,1:128,2:192,3:224,4:240,5:248,6:252,7:254,8:255};
+function maskFor(p){let a=[];for(let i=0;i<4;i++){let n=Math.max(0,Math.min(8,p-i*8));a.push(masks[n]);}return a.join('.')}
+function ipNum(ip){return ip.split('.').reduce((n,o)=>(n*256)+Number(o),0)}
+function numIp(n){return [24,16,8,0].map(s=>(n>>>s)&255).join('.')}
+function validIp(ip){const a=ip.split('.');return a.length===4&&a.every(x=>/^\d+$/.test(x)&&+x>=0&&+x<=255)}
+function network(ip,p){const n=ipNum(ip);const bits=p===0?0:(0xffffffff<<(32-p))>>>0;return numIp((n&bits)>>>0)}
+function broadcast(ip,p){const n=ipNum(ip);const bits=p===0?0:(0xffffffff<<(32-p))>>>0;return numIp(((n&bits)>>>0)|(~bits>>>0))}
+function hosts(p){return p===31?2:p===32?1:Math.max(0,2**(32-p)-2)}
+function block(p){const oct=Math.floor(p/8), rem=p%8;return rem===0?256:256-masks[rem]}
+function prefixForHosts(h){for(let p=30;p>=0;p--)if(hosts(p)>=h)return p;return 0}
+function firstHost(ip,p){return p>=31?network(ip,p):numIp(ipNum(network(ip,p))+1)}
+function lastHost(ip,p){return p>=31?broadcast(ip,p):numIp(ipNum(broadcast(ip,p))-1)}
+function classOf(ip){const x=+ip.split('.')[0];return x<=127?'A':x<=191?'B':x<=223?'C':x<=239?'D':'E'}
+function isPrivate(ip){const [a,b]=ip.split('.').map(Number);return a===10||(a===172&&b>=16&&b<=31)||(a===192&&b===168)}
+function isSpecial(ip){const n=ipNum(ip);return ip==='127.0.0.1'||ip==='0.0.0.0'||ip==='255.255.255.255'||(n>=ipNum('169.254.0.0')&&n<=ipNum('169.254.255.255'))}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function randIp(p){return `${rand(10,223)}.${rand(0,254)}.${rand(0,254)}.${rand(1,254)}`}
+function randPrefix(level){if(level==='easy')return rand(24,26);if(level==='mid')return rand(27,28);if(level==='hard')return rand(29,30);return rand(24,30)}
+function fmtIP(ip,p){return `${ip}/${p}`}
+
+const labels={network:'Network Address',broadcast:'Broadcast Address',first:'First Host',last:'Last Host',range:'Host Range',usable:'Usable Hosts',block:'Block Size',mask:'Subnet Mask ↔ Prefix',subnets:'Number of Subnets',hosts:'Number of Hosts',subnetting:'Subnetting',cidr:'CIDR',vlsm:'VLSM',classes:'IP Address Classes',private:'Private / Public IP',special:'Special Addresses',gateway:'Default Gateway',complete:'Complete Subnetting Task'};
+function qCalc(topic,level){const p=randPrefix(level);const ip=randIp(p);const n=network(ip,p),b=broadcast(ip,p),f=firstHost(ip,p),l=lastHost(ip,p),u=hosts(p),bs=block(p),mask=maskFor(p);const base=topic==='all'?Object.keys(labels)[rand(0,Object.keys(labels).length-1)]:topic;
+let q={topic:base,type:'direct',prompt:'',data:fmtIP(ip,p),answers:[],steps:[]};
+if(base==='network'){q.prompt=`Was ist die Network Address von ${fmtIP(ip,p)}?`;q.answers=[n];q.steps=[`Prefix: /${p}`,`Subnet Mask: ${mask}`,`Block Size: ${bs}`,`Network Address: ${n}`]}
+else if(base==='broadcast'){q.prompt=`Was ist die Broadcast Address von ${fmtIP(ip,p)}?`;q.answers=[b];q.steps=[`Network Address: ${n}`,`Broadcast Address: ${b}`]}
+else if(base==='first'){q.prompt=`Was ist der First Host von ${fmtIP(ip,p)}?`;q.answers=[f];q.steps=[`Network Address: ${n}`,`First Host = Network + 1 → ${f}`]}
+else if(base==='last'){q.prompt=`Was ist der Last Host von ${fmtIP(ip,p)}?`;q.answers=[l];q.steps=[`Broadcast Address: ${b}`,`Last Host = Broadcast − 1 → ${l}`]}
+else if(base==='range'){q.prompt=`Gib den Host Range für ${fmtIP(ip,p)} an.`;q.answers=[`${f} - ${l}`,`${f}–${l}`];q.steps=[`Network: ${n}`,`Broadcast: ${b}`,`Host Range: ${f} - ${l}`]}
+else if(base==='usable'){q.prompt=`Wie viele Usable Hosts hat ${fmtIP(ip,p)}?`;q.answers=[String(u)];q.steps=[`2^(32-${p}) = ${2**(32-p)} Adressen`,`2 reserviert für Network + Broadcast`,`Usable Hosts = ${u}`]}
+else if(base==='block'){q.prompt=`Wie groß ist die Block Size bei ${fmtIP(ip,p)}?`;q.answers=[String(bs)];q.steps=[`Prefix: /${p}`,`Relevantes Oktett: ${Math.floor(p/8)+1}`,`Block Size = 256 − Maskenwert → ${bs}`]}
+else if(base==='mask'){q.prompt=`Welche Subnet Mask gehört zu ${fmtIP(ip,p)}?`;q.answers=[mask];q.steps=[`/${p} = ${mask}`]}
+else if(base==='subnets'){const newP=rand(p,30);const count=2**(newP-p);q.data=`${n}/${p} → Aufteilung in /${newP}`;q.prompt=`Wie viele Subnetze entstehen?`;q.answers=[String(count)];q.steps=[`Entliehene Bits: ${newP-p}`,`Subnetze = 2^${newP-p} = ${count}`]}
+else if(base==='hosts'){q.prompt=`Wie viele Host-Adressen gibt es bei ${fmtIP(ip,p)} insgesamt und wie viele sind nutzbar?`;q.answers=[`${2**(32-p)} / ${u}`,`${2**(32-p)}; ${u}`];q.steps=[`Gesamtadressen: 2^(32-${p}) = ${2**(32-p)}`,`Nutzbar: ${u}`]}
+else if(base==='subnetting'){const newP=rand(Math.max(p,24),Math.min(30,p+3));q.data=`Netz: ${n}/${p} → neue Prefix-Länge /${newP}`;q.prompt=`Wie viele gleich große Subnetze entstehen und wie viele Usable Hosts hat jedes Subnetz?`;const sn=2**(newP-p),hu=hosts(newP);q.answers=[`${sn} / ${hu}`];q.steps=[`Entliehene Bits: ${newP-p}`,`Subnetze: ${sn}`,`Usable Hosts je Subnetz: ${hu}`]}
+else if(base==='cidr'){q.prompt=`Welcher Prefix entspricht der Subnet Mask ${mask}?`;q.data=`Subnet Mask: ${mask}`;q.answers=[`/${p}`,String(p)];q.steps=[`${mask} entspricht /${p}`]}
+else if(base==='vlsm'){const req=[rand(10,60),rand(5,25),rand(2,10)].sort((a,b)=>b-a);const ps=req.map(prefixForHosts);q.data=`Anforderungen: ${req.join(', ')} Hosts`;q.prompt='Ordne den Anforderungen den jeweils kleinsten passenden Prefix zu (größte Anforderung zuerst).';q.answers=[ps.map((x,i)=>`${req[i]}→/${x}`).join(' | ')];q.steps=[`Sortiert: ${req.join(', ')}`,`Kleinste Prefixe: ${ps.map((x,i)=>req[i]+'→/'+x).join(', ')}`]}
+else if(base==='classes'){q.prompt=`Zu welcher IPv4 Address Class gehört ${ip}?`;q.answers=[classOf(ip)];q.steps=[`Erstes Oktett: ${ip.split('.')[0]}`,`Class ${classOf(ip)}`]}
+else if(base==='private'){const x=randIp(p);q.data=x;q.prompt=`Ist ${x} eine Private oder Public IPv4-Adresse?`;q.answers=[isPrivate(x)?'Private':'Public'];q.steps=[`Private Bereiche: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16`,`Ergebnis: ${isPrivate(x)?'Private':'Public'}`]}
+else if(base==='special'){const arr=['127.0.0.1','0.0.0.0','255.255.255.255','169.254.10.20'];const x=arr[rand(0,arr.length-1)];q.data=x;q.prompt=`Welche besondere IPv4-Bedeutung hat ${x}?`;const m={'127.0.0.1':'Loopback','0.0.0.0':'Unspecified / Default Route','255.255.255.255':'Limited Broadcast','169.254.10.20':'Link-Local / APIPA'};q.answers=[m[x]];q.steps=[`${x} → ${m[x]}`]}
+else if(base==='gateway'){const g=`192.168.${rand(0,254)}.1`;const h=g.replace(/\.1$/i,`.${rand(2,254)}`);q.data=`Host: ${h}/24`;q.prompt=`Welche Adresse eignet sich als Default Gateway für diesen Host?`;q.answers=[g];q.steps=[`Host und Gateway müssen im gleichen Subnetz liegen`,`Beispiel-Gateway: ${g}`]}
+else {q.prompt=`Löse die vollständige Subnetting-Aufgabe für ${fmtIP(ip,p)}.`;q.answers=[`${n} | ${b} | ${f} | ${l} | ${u}`];q.steps=[`Network Address: ${n}`,`Broadcast Address: ${b}`,`First Host: ${f}`,`Last Host: ${l}`,`Usable Hosts: ${u}`]}
+return q}
+
+function localizeQuestion(q,lang){let prompt=q.prompt,data=q.data; if(lang==='ar'){prompt=prompt.replace('Was ist die Network Address von','ما هو Network Address للعنوان').replace('Was ist die Broadcast Address von','ما هو Broadcast Address للعنوان').replace('Was ist der First Host von','ما هو First Host للعنوان').replace('Was ist der Last Host von','ما هو Last Host للعنوان').replace('Gib den Host Range für','أعطِ Host Range للعنوان').replace('Wie viele Usable Hosts hat','كم عدد Usable Hosts في').replace('Wie groß ist die Block Size bei','ما هي Block Size في').replace('Welche Subnet Mask gehört zu','ما هي Subnet Mask الموافقة لـ').replace('Welche Subnet Mask gehört zu','ما هي Subnet Mask الموافقة لـ').replace('Wie viele Subnetze entstehen?','كم عدد Subnetze الناتجة؟').replace('Welcher Prefix entspricht der Subnet Mask','أي Prefix يطابق Subnet Mask').replace('Zu welcher IPv4 Address Class gehört','إلى أي IP Address Class ينتمي').replace('Ist ','هل ').replace(' eine Private oder Public IPv4-Adresse?',' عنوان Private أم Public؟').replace('Welche Adresse eignet sich als Default Gateway für diesen Host?','أي عنوان يصلح كـ Default Gateway لهذا الجهاز؟').replace('Löse die vollständige Subnetting-Aufgabe für','حل مهمة Subnetting الكاملة للعنوان');data=data.replace('Host:','الجهاز:').replace('Anforderungen:','المتطلبات:');} else if(lang==='en'){prompt=prompt.replace('Was ist die','What is the').replace('von','of').replace('Wie viele','How many').replace('Welche','Which').replace('Gib den','Give the').replace('für','for').replace('Zu welcher IPv4 Address Class gehört','Which IPv4 Address Class does').replace('Ist ','Is ').replace(' eine Private oder Public IPv4-Adresse?',' a Private or Public IPv4 address?').replace('Löse die vollständige Subnetting-Aufgabe für','Solve the complete Subnetting task for');} return {...q,prompt,data}}
+
+function makeMC(q,lang){const correct=q.answers[0];let pool=[];if(/^\/?\d+$/.test(correct)||/^\d+$/.test(correct)){let n=Number(correct);pool=[String(n),String(Math.max(0,n-2)),String(n+2),String(n+4)]}else if(validIp(correct.split(' - ')[0])){pool=[correct, q.answers[0].split('.').slice(0,3).join('.')+'.1 - '+q.answers[0].split(' - ')[1], network(q.data.split('/')[0],Number(q.data.split('/')[1]))+' - '+q.answers[0].split(' - ')[1],broadcast(q.data.split('/')[0],Number(q.data.split('/')[1]))+' - '+q.answers[0].split(' - ')[1]]}else{pool=[correct,'A','B','C'].map((x,i)=>i===0?correct:x)};pool=[...new Set(pool)].slice(0,4);while(pool.length<4)pool.push('Option '+(pool.length+1));return {...q,type:'mc',choices:pool.sort(()=>Math.random()-.5)}}
+function makeFill(q){return {...q,type:'fill',prompt:q.prompt.replace(/(Network Address|Broadcast Address|First Host|Last Host|Usable Hosts|Block Size|Subnet Mask|Prefix|Private|Public|Loopback|Limited Broadcast|Link-Local|Default Gateway)/,'_____')}}
+
+const state={lang:localStorage.getItem('vidoLang')||'de',mode:'learn',topic:'all',type:'mixed',level:'ihk',round:10,index:0,correct:0,attempts:0,streak:0,xp:Number(localStorage.getItem('vidoXP')||0),current:null,selected:null,answered:false,examSeconds:1800,mistakes:JSON.parse(localStorage.getItem('vidoMistakes')||'[]')};
+function tr(k){return T[state.lang][k]??k}function renderSelects(){topic.innerHTML=topicKeys.map(k=>`<option value="${k}">${T[state.lang].topics[k]}</option>`).join('');qtype.innerHTML=typeKeys.map(k=>`<option value="${k}">${T[state.lang].types[k]}</option>`).join('');level.innerHTML=levelKeys.map(k=>`<option value="${k}">${T[state.lang].levels[k]}</option>`).join('');topic.value=state.topic;qtype.value=state.type;level.value=state.level}
+function ui(){document.documentElement.lang=state.lang;document.documentElement.dir=T[state.lang].dir;document.body.dir=T[state.lang].dir;subtitle.textContent=tr('subtitle');learnTab.textContent=tr('learn');examTab.textContent=tr('exam');topicLabel.textContent=tr('topic');typeLabel.textContent=tr('type');levelLabel.textContent=tr('level');countLabel.textContent=tr('count');newBtn.textContent=tr('new');resetBtn.textContent=tr('reset');mistakesBtn.textContent=tr('mistakes');calcBtn.textContent=tr('calc');correctLbl.textContent=tr('correct');attemptsLbl.textContent=tr('attempts');rateLbl.textContent=tr('rate');streakLbl.textContent=tr('streak');xpLbl.textContent=tr('xp');checkBtn.textContent=tr('check');hintBtn.textContent=tr('hint');modeBadge.textContent=state.mode==='exam'?tr('examMode'):tr('learnMode');document.querySelectorAll('.langs button').forEach(b=>b.classList.toggle('active',b.dataset.lang===state.lang));renderSelects();renderQuestion()}
+function nextQuestion(){if(state.index>=state.round){finishRound();return}state.answered=false;state.selected=null;const topic=state.topic==='all'?'all':state.topic;let q=qCalc(topic,state.level);let type=state.type;if(type==='mixed'){const types=['direct','mc','fill','complete'];type=types[rand(0,types.length-1)]}if(type==='complete')q={...q,type:'complete',prompt:tr('topics')?`Complete Subnetting Task: ${q.data}`:q.prompt};if(type==='mc')q=makeMC(q,state.lang);if(type==='fill')q=makeFill(q);state.current=q;renderQuestion()}
+function renderQuestion(){if(!state.current){return}const q=localizeQuestion(state.current,state.lang);questionNo.textContent=`${tr('question')} ${Math.min(state.index+1,state.round)}/${state.round}`;timer.textContent=state.mode==='exam'?`${Math.floor(state.examSeconds/60).toString().padStart(2,'0')}:${(state.examSeconds%60).toString().padStart(2,'0')}`:'';question.textContent=q.prompt;data.textContent=q.data||'';feedback.className='feedback';feedback.textContent='';solution.className='solution';solution.innerHTML='';answerArea.innerHTML='';if(q.type==='mc'){const box=document.createElement('div');box.className='choices';q.choices.forEach(c=>{const b=document.createElement('button');b.className='choice';b.textContent=c;b.onclick=()=>{state.selected=c;box.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};box.appendChild(b)});answerArea.appendChild(box)}else{const inp=document.createElement('input');inp.id='answerInput';inp.placeholder=tr('answer');inp.autocomplete='off';answerArea.appendChild(inp)}progressBar.style.width=`${(state.index/state.round)*100}%`}
+function normalize(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ').replace(/[–—]/g,'-')}
+function check(){if(state.answered)return;const q=localizeQuestion(state.current,state.lang);let user=state.current.type==='mc'?state.selected:document.getElementById('answerInput')?.value||'';if(!user)return;let ok=state.current.answers.some(a=>normalize(a)===normalize(user));state.attempts++;state.answered=true;if(ok){state.correct++;state.streak++;state.xp+=10;feedback.className='feedback ok';feedback.textContent=tr('correctMsg')}else{state.streak=0;feedback.className='feedback bad';feedback.textContent=tr('wrongMsg');state.mistakes.unshift({prompt:q.prompt,data:q.data,answer:state.current.answers[0],at:new Date().toLocaleDateString()});state.mistakes=state.mistakes.slice(0,100);localStorage.setItem('vidoMistakes',JSON.stringify(state.mistakes))}localStorage.setItem('vidoXP',state.xp);document.getElementById('correct').textContent=state.correct;document.getElementById('attempts').textContent=state.attempts;document.getElementById('rate').textContent=state.attempts?Math.round(state.correct/state.attempts*100)+'%':'0%';document.getElementById('streak').textContent=state.streak;document.getElementById('xp').textContent=state.xp;if(state.mode==='learn'){solution.className='solution show';solution.innerHTML=`<strong>${tr('solution')}</strong>${state.current.steps.map(s=>`<div class="step">• ${s}</div>`).join('')}`}if(state.index+1<state.round){setTimeout(()=>{state.index++;nextQuestion()},900)}else{setTimeout(finishRound,900)}}
+function finishRound(){feedback.className='feedback ok';feedback.textContent=tr('finished');solution.className='solution show';solution.innerHTML=`<strong>${tr('finished')}</strong><div class="step">${tr('correct')}: ${state.correct} / ${state.round}</div><div class="step">${tr('rate')}: ${state.attempts?Math.round(state.correct/state.attempts*100):0}%</div>`;progressBar.style.width='100%'}
+function hint(){if(!state.current)return;solution.className='solution show';const p=state.current.steps?.[0]||'';solution.innerHTML=`<strong>${tr('hintMsg')}</strong><div class="step">${p}</div>`}
+function startRound(){state.index=0;state.correct=0;state.attempts=0;state.streak=0;state.round=Number(count.value);if(state.mode==='exam')state.examSeconds=1800;nextQuestion()}
+function reset(){startRound()}
+function showMistakes(){modal.classList.add('open');modalTitle.textContent=tr('mistakes');modalBody.innerHTML=state.mistakes.length?state.mistakes.map((m,i)=>`<div class="mistake"><b>${i+1}. ${m.prompt}</b><div class="small">${m.data||''}</div><div>✓ ${m.answer}</div></div>`).join(''):`<p>${tr('mistakeEmpty')}</p>`}
+function showCalc(){modal.classList.add('open');modalTitle.textContent=tr('calcTitle');modalBody.innerHTML=`<div class="field"><label>${tr('calcIp')}</label><input id="calcInput" value="192.168.1.25/27" class="ltr"></div><div class="actions"><button class="btn primary" id="calcGo">${tr('calcGo')}</button></div><div id="calcResult" class="solution show" style="margin-top:12px"></div>`;document.getElementById('calcGo').onclick=()=>{const v=document.getElementById('calcInput').value.trim();const m=v.match(/^([0-9.]+)\/(\d{1,2})$/);const out=document.getElementById('calcResult');if(!m||!validIp(m[1])||+m[2]>32){out.textContent=tr('invalid');return}const p=+m[2],ip=m[1];out.innerHTML=`<div class="step"><b>Network Address:</b> ${network(ip,p)}</div><div class="step"><b>Broadcast Address:</b> ${broadcast(ip,p)}</div><div class="step"><b>First Host:</b> ${firstHost(ip,p)}</div><div class="step"><b>Last Host:</b> ${lastHost(ip,p)}</div><div class="step"><b>Host Range:</b> ${firstHost(ip,p)} - ${lastHost(ip,p)}</div><div class="step"><b>Usable Hosts:</b> ${hosts(p)}</div><div class="step"><b>Subnet Mask:</b> ${maskFor(p)}</div><div class="step"><b>Block Size:</b> ${block(p)}</div>`}}
+function tick(){if(state.mode!=='exam'||state.examSeconds<=0)return;state.examSeconds--;timer.textContent=`${Math.floor(state.examSeconds/60).toString().padStart(2,'0')}:${(state.examSeconds%60).toString().padStart(2,'0')}`;if(state.examSeconds===0){finishRound();feedback.className='feedback bad';feedback.textContent=tr('timeUp')}}setInterval(tick,1000);
+
+document.querySelectorAll('.langs button').forEach(b=>b.onclick=()=>{state.lang=b.dataset.lang;localStorage.setItem('vidoLang',state.lang);ui()});learnTab.onclick=()=>{state.mode='learn';learnTab.classList.add('active');examTab.classList.remove('active');ui();startRound()};examTab.onclick=()=>{state.mode='exam';examTab.classList.add('active');learnTab.classList.remove('active');ui();startRound()};newBtn.onclick=()=>{state.index=Math.min(state.index+1,state.round-1);nextQuestion()};resetBtn.onclick=reset;checkBtn.onclick=check;hintBtn.onclick=hint;mistakesBtn.onclick=showMistakes;calcBtn.onclick=showCalc;closeModal.onclick=()=>modal.classList.remove('open');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open')};topic.onchange=e=>{state.topic=e.target.value;startRound()};qtype.onchange=e=>{state.type=e.target.value;startRound()};level.onchange=e=>{state.level=e.target.value;startRound()};count.onchange=e=>{state.round=+e.target.value;startRound()};
+ui();startRound();
 </script>
 </body>
 </html>
