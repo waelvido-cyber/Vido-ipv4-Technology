@@ -301,7 +301,7 @@ function toMC(q){
 
 function localQuestion(q){
   const L=localized[state.lang];
-  let prompt=L.prompts[q.promptKey];
+  let prompt=L.prompts[q.promptKey](q);
   if(q.type==='fill')prompt=prompt.replace(/Network Address|Broadcast Address|First Host|Last Host|Host Range|Usable Hosts|Block Size|Subnet Mask|Prefix|Private|Public|Default Gateway|عنوان الشبكة|عنوان البث|أول عنوان جهاز|آخر عنوان جهاز|نطاق عناوين الأجهزة|العناوين القابلة للاستخدام|حجم الكتلة|قناع الشبكة|خاص|عام|البوابة الافتراضية/g,'_____');
   return {prompt,rule:L.rules[q.ruleKey]};
 }
