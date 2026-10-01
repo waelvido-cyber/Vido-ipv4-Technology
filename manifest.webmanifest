@@ -1,0 +1,11 @@
+{
+  "name":"VIDO Technology — IPv4",
+  "short_name":"VIDO IPv4",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#050b16",
+  "theme_color":"#07111f",
+  "dir":"ltr",
+  "lang":"de",
+  "icons":[{"src":"apple-touch-icon.png","sizes":"180x180","type":"image/png"}]
+}

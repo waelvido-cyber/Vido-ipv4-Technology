@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VIDO IPv4">
+<title>VIDO Technology — IPv4</title>
+<style>
+:root{
+ --bg:#050b16;--panel:rgba(10,19,35,.88);--panel2:rgba(14,27,48,.82);
+ --line:rgba(148,163,184,.16);--text:#f8fafc;--muted:#94a3b8;
+ --cyan:#22d3ee;--blue:#3b82f6;--green:#34d399;--red:#fb7185;--amber:#fbbf24;
+ --shadow:0 24px 70px rgba(0,0,0,.35)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:
+linear-gradient(rgba(2,6,23,.72),rgba(2,6,23,.82)),
+var(--vido-bg) center center/cover fixed no-repeat;overflow-x:hidden;transition:background-image .8s ease}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.10;background-image:linear-gradient(rgba(148,163,184,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.08) 1px,transparent 1px);background-size:38px 38px}
+.wrap{max-width:980px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom));position:relative;z-index:1}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:18px 4px 20px}
+.brand{color:var(--cyan);font-size:12px;font-weight:950;letter-spacing:2.6px}
+h1{margin:6px 0 0;font-size:clamp(28px,6vw,44px);line-height:1.08;letter-spacing:-1.3px}
+.subtitle{color:#cbd5e1;margin-top:9px;font-size:14px;font-weight:700}
+.badge{border:1px solid rgba(34,211,238,.25);background:rgba(34,211,238,.07);color:#a5f3fc;border-radius:999px;padding:9px 12px;font-size:12px;font-weight:900;white-space:nowrap}
+.card{background:linear-gradient(145deg,rgba(10,20,37,.92),rgba(7,16,30,.78));border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}
+.tab{background:rgba(148,163,184,.08);color:#cbd5e1;border:1px solid var(--line);padding:12px;border-radius:13px;font-weight:900}
+.tab.active{background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(59,130,246,.2));border-color:rgba(34,211,238,.4);color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
+select,input{width:100%;min-height:49px;border:1px solid rgba(148,163,184,.22);border-radius:13px;background:#f8fafc;color:#0f172a;padding:12px 14px;font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+button{min-height:47px;border:0;border-radius:13px;padding:12px 15px;font-weight:900;font-size:14px;cursor:pointer}
+.primary{color:#fff;background:linear-gradient(135deg,#06b6d4,#2563eb);box-shadow:0 12px 28px rgba(37,99,235,.22)}
+.secondary{background:#eef2f7;color:#0f172a}.ghost{background:rgba(148,163,184,.09);color:#e2e8f0;border:1px solid var(--line)}
+button:active{transform:scale(.985)}
+.progress-head{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;font-weight:900}
+.bar{height:8px;background:rgba(148,163,184,.12);border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));width:0%;transition:.25s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.stat{background:rgba(2,8,23,.5);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}.stat span{display:block;color:var(--muted);font-size:10px;font-weight:900}.stat b{font-size:20px;display:block;margin-top:3px}
+.question-meta{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;font-weight:900}.question{font-size:clamp(20px,4vw,28px);line-height:1.5;font-weight:950;margin:10px 0}.ip{direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e0f2fe;font-size:clamp(15px,3.5vw,20px);line-height:1.65;word-break:break-word}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{margin-top:10px;padding:11px 12px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18);color:#fde68a;line-height:1.8}
+.result{line-height:1.9}.ok{color:var(--green);font-weight:950}.bad{color:var(--red);font-weight:950}.steps{direction:rtl;text-align:right;white-space:pre-wrap;margin-top:10px;padding:14px;border-radius:13px;background:#020817;border:1px solid var(--line);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.85}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini-title{font-weight:950;margin-bottom:10px}.mini{color:#cbd5e1;font-size:13px;line-height:1.8}
+.hidden{display:none!important}.footer{text-align:center;color:#64748b;font-size:11px;padding:18px}.danger{color:#fecaca}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px;z-index:10}.modal.open{display:flex}.sheet{width:min(700px,100%);background:#081221;border:1px solid var(--line);border-radius:20px;padding:18px;max-height:80vh;overflow:auto}.mistake{padding:12px;border:1px solid var(--line);border-radius:13px;margin:8px 0;background:rgba(148,163,184,.05)}.mistake b{display:block;margin-bottom:5px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:rgba(34,211,238,.1);color:#a5f3fc;font-size:10px;font-weight:900}
+@media(max-width:700px){.wrap{padding-left:10px;padding-right:10px}.hero{display:block}.badge{display:inline-block;margin-top:12px}.grid,.two,.answer-grid,.actions{grid-template-columns:1fr}.card{padding:15px;border-radius:17px}.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:29px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+ <div><div class="brand">VIDO TECHNOLOGY</div><h1>IPv4</h1><div class="subtitle">Wael Alaya · Lernen, trainieren, selbst testen</div></div>
+ <div class="badge">IPv4 • Subnetting</div>
+</header>
+
+<section class="card">
+ <div class="tabs">
+  <button class="tab active" id="learnTab">Lernmodus</button>
+  <button class="tab" id="examTab">Prüfungsmodus</button>
+ </div>
+ <div class="grid">
+  <div class="field"><label>Trainingsart</label>
+   <select id="mode">
+    <option value="network">Network Address</option><option value="broadcast">Broadcast Address</option>
+    <option value="block">Block Size</option><option value="first">Erster Host</option>
+    <option value="last">Letzter Host</option><option value="hosts">Nutzbare Hosts</option>
+    <option value="all">Komplette Aufgabe</option><option value="ihk">IHK-orientiertes Training</option>
+   </select>
+  </div>
+  <div class="field"><label>Schwierigkeitsgrad</label>
+   <select id="difficulty"><option value="easy">Leicht — /24 bis /26</option><option value="medium">Mittel — /27 bis /28</option><option value="hard">Schwer — /29 bis /30</option><option value="ihk">IHK-orientiert — /24 bis /30</option></select>
+  </div>
+ </div>
+ <div class="grid" style="margin-top:12px">
+  <div class="field"><label>Anzahl der Fragen</label><select id="roundSize"><option>10</option><option>20</option><option>30</option></select></div>
+  <div class="field"><label>Ergebnis</label><div id="scoreBox" style="min-height:49px;display:flex;align-items:center;padding:12px;border:1px solid var(--line);border-radius:13px;background:rgba(2,8,18,.35);font-weight:950">0 / 0</div></div>
+ </div>
+ <div class="actions">
+  <button class="primary" id="newBtn">Neue Aufgabe</button>
+  <button class="secondary" id="resetBtn">Runde zurücksetzen</button>
+ </div>
+ <div class="actions">
+  <button class="ghost" id="mistakesBtn">Meine Fehler</button>
+  <button class="ghost" id="calcBtn">Subnetting-Rechner</button>
+ </div>
+</section>
+
+<section class="card">
+ <div class="progress-head"><span>Rundenfortschritt</span><span id="progressText">0 / 10</span></div>
+ <div class="bar"><i id="progressBar"></i></div>
+ <div class="stats">
+  <div class="stat"><span>Richtig</span><b id="correct">0</b></div>
+  <div class="stat"><span>Versuche</span><b id="attempts">0</b></div>
+  <div class="stat"><span>Quote</span><b id="rate">0%</b></div>
+  <div class="stat"><span>Richtige Serie</span><b id="streak">0</b></div>
+ </div>
+</section>
+
+<section class="card">
+ <div class="question-meta"><span id="questionNo">Frage 1</span><span class="pill" id="modePill">Training</span></div>
+ <div class="question" id="question">Klicke auf „Neue Aufgabe“, um das Training zu starten.</div>
+ <div class="ip" id="given"></div>
+</section>
+
+<section class="card">
+ <div class="answer-grid">
+  <div class="field"><label>Deine Antwort</label><input id="answer" placeholder="Beispiel: 192.168.1.64" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+  <div class="field hidden" id="extraWrap"><label>Zweite Antwort</label><input id="answer2" placeholder="Beispiel: 192.168.1.127" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+ </div>
+ <div class="actions">
+  <button class="primary" id="checkBtn">Antwort prüfen</button>
+  <button class="ghost" id="hintBtn">Hinweis</button>
+ </div>
+ <div id="hint" class="hint hidden"></div>
+</section>
+
+<section class="card result" id="result">Nach der Prüfung erscheinen hier Ergebnis und Schritt-für-Schritt-Erklärung.</section>
+
+<section class="card">
+ <div class="two">
+  <div><div class="mini-title">Schnellmethode</div><div class="mini">Prefix → Subnet Mask → Block Size → Subnetzbereich → Network → Broadcast → Hosts</div></div>
+  <div><div class="mini-title">Prüfungsbegriffe</div><div class="mini">Network Address · Broadcast Address · Subnet Mask · Prefix · Host Range · Usable Hosts</div></div>
+ </div>
+</section>
+
+<footer class="footer">VIDO Technology · IPv4 Training · <strong>Wael Alaya</strong></footer>
+</div>
+
+<div class="modal" id="mistakesModal"><div class="sheet"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">Meine Fehler</h2><button class="ghost" onclick="closeModal('mistakesModal')">Schließen</button></div><div id="mistakesList" style="margin-top:12px"></div></div></div>
+
+<div class="modal" id="calcModal"><div class="sheet"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">Subnetting-Rechner</h2><button class="ghost" onclick="closeModal('calcModal')">Schließen</button></div>
+<div class="field" style="margin-top:14px"><label>IP / Prefix</label><input id="calcInput" placeholder="192.168.10.77/26" autocomplete="off" autocapitalize="none"></div>
+<button class="primary" id="calcRun" style="margin-top:10px">Berechnen</button><div id="calcResult" class="result" style="margin-top:12px"></div>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let task=null,locked=false,correct=0,attempts=0,roundCount=0,roundTotal=10,streak=0,learnMode=true;
+const bank=[
+{q:"Ein Gerät hat 192.168.10.77/26. Was ist die Network Address?",a:"192.168.10.64",kind:"text"},
+{q:"Ein Gerät hat 192.168.20.130/27. Was ist die Broadcast Address?",a:"192.168.20.159",kind:"text"},
+{q:"Die Subnet Mask 255.255.255.240. Wie viele Usable Hosts?",a:"14",kind:"number"},
+{q:"Das Netzwerk benötigt 30 Usable Hosts. Welcher kleinste Prefix ist geeignet?",a:"/27",kind:"prefix"},
+{q:"192.168.50.0/24 wird in /27 aufgeteilt. Wie viele Subnetze entstehen?",a:"8",kind:"number"},
+{q:"Welche Host-Adresse ist innerhalb von 10.20.30.64/28 gültig?",a:"10.20.30.65",kind:"text"},
+{q:"172.16.5.200/27. Was ist die Network Address?",a:"172.16.5.192",kind:"text"},
+{q:"192.168.100.96/28. Was ist der letzte gültige Host?",a:"192.168.100.110",kind:"text"},
+{q:"10.10.10.145/28. Was ist die Broadcast Address?",a:"10.10.10.159",kind:"text"},
+{q:"Das Netzwerk benötigt 6 Usable Hosts. Welcher kleinste passende Prefix ist geeignet?",a:"/29",kind:"prefix"}
+];
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function prefixFor(d){return d==="easy"?rand(24,26):d==="medium"?rand(27,28):d==="hard"?rand(29,30):rand(24,30)}
+function maskFromPrefix(p){return 256-2**(32-p)}
+function norm(s){return String(s||"").trim().replace(/\s+/g,"").toLowerCase()}
+function calc(ip,p){
+ const parts=ip.split(".").map(Number); if(parts.length!==4||parts.some(x=>x<0||x>255||!Number.isInteger(x))||p<0||p>32)return null;
+ const block=2**(32-p), last=Math.floor(parts[3]/block)*block, net=[parts[0],parts[1],parts[2],last].join(".");
+ const bc=[parts[0],parts[1],parts[2],last+block-1].join(".");
+ return {ip,p,mask:maskFromPrefix(p),block,network:net,broadcast:bc,first:block>2?net.replace(/\d+$/,"")+(last+1):"—",lastHost:block>2?bc.replace(/\d+$/,"")+(last+block-2):"—",hosts:Math.max(0,block-2)};
+}
+function dynamicTask(){
+ const p=prefixFor($("difficulty").value), block=2**(32-p), last=rand(0,Math.floor(255/block))*block, host=rand(1,Math.max(1,block-2));
+ const base=`${rand(10,10)}.${rand(0,254)}.${rand(0,254)}`, ip=`${base}.${last+host}`, c=calc(ip,p);
+ task={mode:$("mode").value,...c,base,ip,prefix:p};
+}
+function ihkTask(){const q=bank[rand(0,bank.length-1)];task={mode:"ihk",ihk:q};}
+function makeTask(){
+ locked=false;roundTotal=Number($("roundSize").value);
+ if($("mode").value==="ihk")ihkTask();else dynamicTask();
+ $("answer").value="";$("answer2").value="";$("hint").classList.add("hidden");$("result").textContent=learnMode?"Nach der Prüfung erscheinen hier Ergebnis und Schritt-für-Schritt-Erklärung.":"Prüfungsmodus: Die Lösung wird erst nach der Prüfung angezeigt.";
+ $("extraWrap").classList.toggle("hidden",task.mode!=="all");
+ renderTask();updateProgress();
+}
+function renderTask(){
+ if(task.mode==="ihk"){$("question").textContent=task.ihk.q;$("given").textContent="IHK-orientierte Aufgabe · Originalübung";$("modePill").textContent="IHK-oriented";return}
+ const labels={network:"Was ist die Network Address?",broadcast:"Was ist die Broadcast Address?",block:"Was ist die Block Size?",first:"Was ist der erste Host?",last:"Was ist der letzte Host?",hosts:"Wie viele Usable Hosts?",all:"Berechne Network Address und Broadcast Address."};
+ $("question").textContent=labels[task.mode];$("given").textContent=`IP Address: ${task.ip}  |  Subnet Mask: 255.255.255.${task.mask}  (/${task.p})`;$("modePill").textContent=learnMode?"Lernen":"Prüfung";
+}
+function explanation(){
+ if(task.mode==="ihk")return `Lösung:\n${task.ihk.a}\n\nDiese Übungsaufgabe basiert auf IPv4- und Subnetting-Kenntnissen.`;
+ const starts=Array.from({length:256/task.block},(_,i)=>i*task.block).join(" / ");
+ return `1. Prefix = /${task.p}\n2. Subnet Mask = 255.255.255.${task.mask}\n3. Block Size = 256 − ${task.mask} = ${task.block}\n4. Subnetzanfänge: ${starts}\n5. Network Address = ${task.network}\n6. Broadcast Address = ${task.broadcast}\n7. Host Range = ${task.first} – ${task.lastHost}\n8. Usable Hosts = ${task.hosts}`;
+}
+function expected(){
+ if(task.mode==="ihk")return task.ihk.a;
+ if(task.mode==="network")return task.network;
+ if(task.mode==="broadcast")return task.broadcast;
+ if(task.mode==="block")return String(task.block);
+ if(task.mode==="first")return task.first;
+ if(task.mode==="last")return task.lastHost;
+ if(task.mode==="hosts")return String(task.hosts);
+ return null;
+}
+function check(){
+ if(!task||locked)return;
+ attempts++;let ok=false, ans=norm($("answer").value), expectedText=expected();
+ if(task.mode==="all")ok=ans===norm(task.network)&&norm($("answer2").value)===norm(task.broadcast);
+ else ok=ans===norm(expectedText);
+ locked=true;roundCount++;
+ if(ok){correct++;streak++;$("result").innerHTML=`<span class="ok">✓ Richtige Antwort</span><div class="steps">${learnMode?explanation():"Antwort erfasst. Im Prüfungsmodus kannst du zur nächsten Aufgabe wechseln."}</div>`}
+ else{streak=0;saveMistake();$("result").innerHTML=`<span class="bad">✗ Falsche Antwort</span><br>Richtige Antwort: <b>${task.mode==="all"?task.network+" / "+task.broadcast:expectedText}</b>${learnMode?`<div class="steps">${explanation()}</div>`:""}`
+ }
+ updateStats();updateProgress();
+}
+function hint(){
+ if(!task)return;$("hint").classList.remove("hidden");
+ if(task.mode==="ihk")$("hint").textContent="Beginne mit der Aufgabenstellung: Network, Broadcast oder Hosts. Bestimme dann Prefix und Block Size. Suche nicht direkt nach der Lösung.";
+ else $("hint").textContent=`Beginne mit /${task.p}: Berechne zuerst die Subnet Mask und danach Block Size = 256 − Mask-Wert im relevanten Oktett.`;
+}
+function updateStats(){
+ $("correct").textContent=correct;$("attempts").textContent=attempts;$("rate").textContent=attempts?Math.round(correct/attempts*100)+"%":"0%";$("streak").textContent=streak;$("scoreBox").textContent=`${correct} / ${attempts}`;
+}
+function updateProgress(){
+ const done=Math.min(roundCount,roundTotal), pct=Math.min(100,done/roundTotal*100);
+ $("progressText").textContent=`${done} / ${roundTotal}`;$("progressBar").style.width=pct+"%";$("questionNo").textContent=`Frage ${Math.min(done+1,roundTotal)} / ${roundTotal}`;
+ if(done>=roundTotal&&attempts){$("result").innerHTML=`<b>Runde beendet</b><br>Dein Ergebnis: ${correct} von ${attempts} (${Math.round(correct/attempts*100)}%).<br><span class="small">Setze die Runde zurück oder starte eine neue Runde.</span>`}
+}
+function resetRound(){correct=0;attempts=0;roundCount=0;streak=0;updateStats();makeTask()}
+function setMode(exam){
+ learnMode=!exam;$("learnTab").classList.toggle("active",learnMode);$("examTab").classList.toggle("active",!learnMode);makeTask();
+}
+function saveMistake(){
+ const list=JSON.parse(localStorage.getItem("vido_ipv4_mistakes")||"[]");
+ const item=task.mode==="ihk"?{q:task.ihk.q,a:task.ihk.a}:{q:$("question").textContent,given:$("given").textContent,a:expected()};
+ list.unshift(item);localStorage.setItem("vido_ipv4_mistakes",JSON.stringify(list.slice(0,50)));
+}
+function openMistakes(){
+ const list=JSON.parse(localStorage.getItem("vido_ipv4_mistakes")||"[]"), box=$("mistakesList");
+ box.innerHTML=list.length?list.map((x,i)=>`<div class="mistake"><b>${i+1}. ${x.q}</b><span class="small">Antwort: ${x.a}</span></div>`).join(""):`<div class="small">Noch keine Fehler gespeichert.</div>`;
+ $("mistakesModal").classList.add("open")
+}
+function closeModal(id){$(id).classList.remove("open")}
+function runCalc(){
+ const m=$("calcInput").value.trim().match(/^(\d+\.\d+\.\d+\.\d+)\/(\d+)$/);if(!m){$("calcResult").innerHTML="<span class='bad'>Eingabeformat: 192.168.10.77/26</span>";return}
+ const c=calc(m[1],Number(m[2]));if(!c){$("calcResult").innerHTML="<span class='bad'>IP-Adresse oder Prefix ist ungültig.</span>";return}
+ $("calcResult").innerHTML=`<div class="steps">IP Address: ${c.ip}/${c.p}\nSubnet Mask: 255.255.255.${c.mask}\nBlock Size: ${c.block}\nNetwork Address: ${c.network}\nBroadcast Address: ${c.broadcast}\nHost Range: ${c.first} – ${c.lastHost}\nUsable Hosts: ${c.hosts}</div>`
+}
+$("newBtn").onclick=makeTask;$("resetBtn").onclick=resetRound;$("checkBtn").onclick=check;$("hintBtn").onclick=hint;
+$("learnTab").onclick=()=>setMode(false);$("examTab").onclick=()=>setMode(true);$("mistakesBtn").onclick=openMistakes;
+$("calcBtn").onclick=()=>{$("calcModal").classList.add("open");$("calcInput").focus()};$("calcRun").onclick=runCalc;
+$("answer").addEventListener("keydown",e=>{if(e.key==="Enter")check()});$("answer2").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
+$("mode").onchange=makeTask;$("difficulty").onchange=makeTask;$("roundSize").onchange=resetRound;
+makeTask();updateStats();
+
+// VIDO Technology — automatic cyber background rotation
+const vidoBackgrounds=[
+  "./binary-background.jpg",
+  "./network-background.jpg",
+  "./circuit-background.jpg",
+  "./terminal-background.jpg"
+];
+let vidoBgIndex=0;
+const vidoBgPreload=vidoBackgrounds.map(src=>{const img=new Image();img.src=src;return img;});
+function setVidoBackground(i){
+  vidoBgIndex=i % vidoBackgrounds.length;
+  const src=vidoBackgrounds[vidoBgIndex];
+  document.body.style.backgroundImage =
+    `linear-gradient(rgba(2,6,23,.72),rgba(2,6,23,.82)),url("${src}")`;
+}
+setVidoBackground(0);
+setInterval(()=>setVidoBackground(vidoBgIndex+1),60000);
+</script>
+</body>
+</html>
