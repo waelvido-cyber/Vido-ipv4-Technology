@@ -1,5 +1,9 @@
-const CACHE = "vido-ipv4-multilang-v7";
-const ASSETS=['./','./index.html','./manifest.webmanifest','./apple-touch-icon.png','./syria-flag-background.jpg','./syria-ruins-background.jpg','./syria-sunset-background.jpg','./syria-valley-background.jpg','./binary-background.jpg','./network-background.jpg','./circuit-background.jpg','./terminal-background.jpg'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(e.request.mode==='navigate'||u.pathname.endsWith('/index.html')){e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put('./index.html',c));return r}).catch(()=>caches.match('./index.html')));return}e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{const x=r.clone();caches.open(CACHE).then(y=>y.put(e.request,x));return r})))});
+const CACHE="vido-ipv4-v5";
+const ASSETS=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png",
+"./syria-flag-background.jpg","./syria-ruins-background.jpg","./syria-sunset-background.jpg","./syria-valley-background.jpg",
+"./binary-background.jpg","./network-background.jpg","./circuit-background.jpg","./terminal-background.jpg"];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()});
+self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;const u=new URL(e.request.url);
+if(e.request.mode==="navigate"||u.pathname.endsWith("/index.html")){e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put("./index.html",c));return r}).catch(()=>caches.match("./index.html")));return}
+e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{const x=r.clone();caches.open(CACHE).then(z=>z.put(e.request,x));return r})))});

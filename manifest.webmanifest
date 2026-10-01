@@ -1,13 +1,20 @@
 {
-  "name":"VIDO Technology – IPv4",
-  "short_name":"VIDO IPv4",
-  "description":"Multilingual IPv4 & Subnetting Trainer for IHK-oriented practice",
-  "start_url":"./index.html",
-  "scope":"./",
-  "display":"standalone",
-  "background_color":"#07111f",
-  "theme_color":"#07111f",
-  "orientation":"portrait",
-  "lang":"de",
-  "icons":[{"src":"apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}]
+  "name": "VIDO Technology – IPv4",
+  "short_name": "VIDO IPv4",
+  "description": "Multilingual IPv4 and Subnetting Trainer",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "orientation": "portrait",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
