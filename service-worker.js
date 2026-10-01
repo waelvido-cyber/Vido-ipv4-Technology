@@ -1,4 +1,4 @@
-const CACHE="vido-ipv4-v6";
+const CACHE="vido-ipv4-v9";
 const ASSETS=["./","./index.html","./manifest.webmanifest","./apple-touch-icon.png",
 "./syria-flag-background.jpg","./syria-ruins-background.jpg","./syria-sunset-background.jpg","./syria-valley-background.jpg",
 "./binary-background.jpg","./network-background.jpg","./circuit-background.jpg","./terminal-background.jpg"];
