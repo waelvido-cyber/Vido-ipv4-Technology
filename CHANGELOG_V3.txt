@@ -1,0 +1,6 @@
+VIDO Changeable Build 2.1.0
+
+- Arabic language coverage extended across Help, Account, Tutor, Simulator, navigation and Soon view.
+- Added a dedicated Soon / Coming Soon view with planned IT topics.
+- Added localized Simulator labels and account/tutor controls.
+- Preserved the locked foundation and built only from Changeable Build V2.
