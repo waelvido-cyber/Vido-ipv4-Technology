@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest"><title>VIDO Technology – IT Learning Platform</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="vido-build" content="FINAL-MOBILE-MULTILANG-IOS-SCROLL-v2"><title>VIDO Technology – IT Learning Platform</title>
 <style>
 :root{--bg:#07111f;--panel:#0c1828;--panel2:#101f33;--line:#263b51;--text:#eef6ff;--muted:#91a4ba;--accent:#38bdf8;--accent2:#22d3ee;--ok:#4ade80;--bad:#fb7185;--warn:#fbbf24;--shadow:0 18px 50px #0007}
 *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.ltr{direction:ltr;unicode-bidi:isolate;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.app{height:100%;display:grid;grid-template-rows:62px 1fr 36px;background:radial-gradient(circle at 75% 0,#12314a55,transparent 36%),linear-gradient(135deg,#07111f,#091827 55%,#07111f)}
@@ -86,7 +86,104 @@ body.forceLandscape .orientationBtn{border-color:var(--accent);color:var(--accen
 
 /* Final multilingual/mobile patch */
 html[dir="rtl"] .top{direction:rtl}html[dir="rtl"] .topTitle{border-left:0;border-right:1px solid var(--line);padding-left:0;padding-right:15px}html[dir="rtl"] .navbtn{text-align:right}html[dir="rtl"] .navbtn.active{box-shadow:inset -3px 0 var(--accent)}html[dir="rtl"] .viewHead,html[dir="rtl"] .heroTop{direction:rtl}html[dir="rtl"] .answerRow,html[dir="rtl"] .actions{direction:rtl}
-@media(max-width:650px){.top{gap:5px}.top .brand{flex:0 0 auto}.top .lang{margin-left:auto}.topStats{display:none!important}.orientationBtn{flex:0 0 auto}.lang select{max-width:72px}.viewHead h1{max-width:calc(100vw - 90px)}.simPanel.center{height:50vh;min-height:320px}.simPanel.right{height:auto;max-height:none}.simBody{overflow:auto}.device{width:88px;font-size:11px}.device small{font-size:9px}}
+@media(max-width:650px){.top{gap:5px}.top .brand{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}.top .lang{margin-left:auto}.topStats{display:none!important}.orientationBtn{flex:0 0 auto}.lang select{max-width:72px}.viewHead h1{max-width:calc(100vw - 90px)}.simPanel.center{height:50vh;min-height:320px}.simPanel.right{height:auto;max-height:none}.simBody{overflow:auto}.device{width:88px;font-size:11px}.device small{font-size:9px}}
+
+/* VIDO FINAL iOS MOBILE SCROLL FIX — document scrolling on portrait */
+@media (max-width:650px){
+  html,body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .app{height:auto;min-height:100svh;display:block;}
+  .top{position:sticky;top:0;height:57px;min-height:57px;}
+  .body{display:block;min-height:0;}
+  .main{min-height:0;overflow:visible;}
+  .view{height:auto;min-height:calc(100svh - 89px);overflow:visible;padding:11px;padding-bottom:28px;}
+  .view.active{display:block;}
+  .pathWrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
+  .sim{height:auto;min-height:0;}
+  .simPanel.center{height:50svh;min-height:320px;}
+  .simPanel.right{height:auto;max-height:none;}
+}
+
+
+/* VIDO FINAL iPhone PORTRAIT — native document scrolling */
+@media (max-width: 650px) {
+  html {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  body {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .app {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .body,
+  .main {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .view {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  /* Horizontal scrolling is allowed only inside components that need it. */
+  .pathWrap,
+  .tabbar {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    touch-action: pan-x !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Simulator itself must not become the page scroll container. */
+  .sim {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .simPanel.center {
+    height: 50svh !important;
+    min-height: 320px !important;
+  }
+
+  .simPanel.right {
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
 </style>
 </head>
 <body><div class="app">
@@ -271,7 +368,7 @@ async function setOrientationMode(mode){
   updateOrientationUI();
 }
 if(orientationBtn)orientationBtn.onclick=()=>setOrientationMode(orientationMode==='landscape'?'auto':'landscape');
-$('langSelect').onchange=e=>{lang=e.target.value;state.lang=lang;localStorage.setItem('vidoLang',lang);applyLanguage();save()};
+$('langSelect').onchange=e=>{lang=e.target.value;state.lang=lang;localStorage.setItem('vidoLang',lang);save();location.reload()};
 updateOrientationUI();
 
 function renderAll(){renderStats();renderPath();renderMission();renderLists();renderSkills();renderGlossary();renderVideos();showView();}
