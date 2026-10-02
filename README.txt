@@ -1,16 +1,7 @@
-VIDO Technology – V10 Foundation / Learning Platform
+VIDO Technology – V11 Final Foundation
 
-Core architecture included:
-- direct in-view navigation without page-scroll navigation
-- real back history with question/state preservation
-- stable question IDs and exact question search
-- notes/favorites and mistake review linked to original questions
-- progressive Help / Why / step-by-step support
-- dynamic Learning Path, XP, streak, mastery and adaptive-ready state
-- Video Learning navigation
-- IHK mode
-- Smart Glossary
-- Cisco-style VIDO Network Simulator workspace with topology, CLI, packet flow, routing/ARP/MAC/log/task panels
-- localStorage learning-state persistence
+This build turns the VIDO IPv4 trainer into a single-view IT learning platform foundation.
 
-Important: this is a functional local foundation. It does not falsely claim cloud authentication, real AI-generated MP4 videos, or a full production Cisco IOS/network stack. Those are future engine integrations.
+Core preserved: route/view navigation, exact Back history, stable question IDs, search, notes, mistakes, progressive help, Why, guided Tutor, Learning Path, skill mastery, review scheduling, video-learning mapping, IHK mode, Cisco-style network lab, packet/routing/ARP/MAC/CLI panels, local state persistence, XP/streak/daily mission, glossary and responsive PWA shell.
+
+Important: this is a local foundation/prototype. It does not falsely claim a real Cisco IOS implementation, cloud AI, generated MP4 videos, multi-user backend, or production database. Those can be added above this foundation without changing the core navigation/state architecture.

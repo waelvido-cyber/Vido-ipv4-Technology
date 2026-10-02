@@ -1,20 +1,12 @@
 {
-  "name": "VIDO Technology – IPv4 Trainer",
-  "short_name": "VIDO IPv4",
-  "description": "IPv4 Subnetting Trainer – Wael Alaya",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#07111f",
-  "theme_color": "#07111f",
-  "orientation": "portrait",
-  "lang": "de",
-  "icons": [
-    {
-      "src": "apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+  "name":"VIDO Technology – IT Learning Platform",
+  "short_name":"VIDO IT",
+  "description":"Interactive IT Learning and Network Simulation Platform",
+  "start_url":"./index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#07111f",
+  "theme_color":"#07111f",
+  "orientation":"any",
+  "lang":"de"
 }
