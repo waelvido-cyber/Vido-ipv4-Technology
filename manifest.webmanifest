@@ -1,12 +1,1 @@
-{
-  "name":"VIDO Technology – IT Learning Platform",
-  "short_name":"VIDO IT",
-  "description":"Interactive IT Learning and Network Simulation Platform",
-  "start_url":"./index.html",
-  "scope":"./",
-  "display":"standalone",
-  "background_color":"#07111f",
-  "theme_color":"#07111f",
-  "orientation":"any",
-  "lang":"de"
-}
+{"name":"VIDO Technology – IT Learning Platform","short_name":"VIDO IT","description":"Interactive IT Learning and Network Simulation Platform","start_url":"./index.html","scope":"./","display":"standalone","background_color":"#07111f","theme_color":"#07111f","orientation":"any","lang":"de","dir":"ltr"}

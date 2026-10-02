@@ -1,7 +1,16 @@
-VIDO Technology – V11 Final Foundation
+VIDO Technology – Final Audited Build
 
-This build turns the VIDO IPv4 trainer into a single-view IT learning platform foundation.
+This package is the audited client-side foundation of the VIDO IT Learning Platform.
 
-Core preserved: route/view navigation, exact Back history, stable question IDs, search, notes, mistakes, progressive help, Why, guided Tutor, Learning Path, skill mastery, review scheduling, video-learning mapping, IHK mode, Cisco-style network lab, packet/routing/ARP/MAC/CLI panels, local state persistence, XP/streak/daily mission, glossary and responsive PWA shell.
+Verified/fixed in this build:
+- stable DE / EN / AR selector with Arabic RTL and technical LTR values
+- view/route navigation with previous-place Back history
+- stable question IDs, exact search, notes, mistakes and local learning state
+- progressive Help, Why and Tutor flow
+- Learning Path, mastery, XP, streak and daily mission
+- 40 IPv4/network questions and IHK-oriented practice mode
+- Cisco-style VIDO Network Lab with PC, Switch, Router, Server, CLI, routing, ARP/MAC, packet flow, ping and task validation
+- PWA manifest and service worker cache version
+- JavaScript syntax and archive integrity checked
 
-Important: this is a local foundation/prototype. It does not falsely claim a real Cisco IOS implementation, cloud AI, generated MP4 videos, multi-user backend, or production database. Those can be added above this foundation without changing the core navigation/state architecture.
+Scope: educational client-side simulator. It is not a real Cisco IOS emulator, production backend, cloud AI service or generated MP4 video service.
