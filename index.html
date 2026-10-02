@@ -185,50 +185,121 @@ html[dir="rtl"] .top{direction:rtl}html[dir="rtl"] .topTitle{border-left:0;borde
 }
 
 
-/* =========================================================
-   VIDO MOBILE UI — SEPARATE PHONE LAYOUT
-   ========================================================= */
-.mobileTop,.mobileNav{display:none}
-@media (max-width:650px){
-  html,body{width:100%;min-width:0;height:auto!important;min-height:100%;overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto}
-  body{padding:0!important}
-  body>.app>.top{display:none!important}
-  body>.app{display:block!important;width:100%;height:auto!important;min-height:100svh;overflow:visible!important}
-  body>.app>.body{display:block!important;width:100%;min-height:0}
-  body>.app>.body>.side{display:none!important}
-  body>.app>.body>.main{display:block!important;width:100%;min-width:0;min-height:0;overflow:visible!important}
-  .mobileTop{position:sticky;top:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:58px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));background:#07111ff5;border-bottom:1px solid var(--line);backdrop-filter:blur(14px);box-sizing:border-box}
-  .mobileBrand{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:950;letter-spacing:1px;font-size:15px}
-  .mobileBrand span{color:var(--accent)}
-  .mobileLang{flex:0 0 auto;width:auto;min-width:74px;max-width:86px;background:#0d1a2a;color:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 7px;font-size:12px}
-  .view{display:none;width:100%;min-width:0;max-width:none;height:auto!important;min-height:0!important;overflow:visible!important;padding:12px 10px calc(82px + env(safe-area-inset-bottom))!important;box-sizing:border-box}
-  .view.active{display:block!important}.viewInner{width:100%;max-width:100%;min-width:0;margin:0}
-  .grid,.two,.three,.four{grid-template-columns:1fr!important}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .card{width:100%;min-width:0;padding:13px;border-radius:14px}.hero{min-height:0}.question{font-size:21px;line-height:1.38;overflow-wrap:anywhere}.target{overflow-wrap:anywhere}.dataBox{font-size:17px;overflow-wrap:anywhere}
-  .answerRow{display:flex;flex-direction:column;min-width:0}.answerRow input{width:100%;min-width:0;box-sizing:border-box}
-  .actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.actions>*{width:100%;min-width:0}
-  .pathWrap{width:100%;max-width:100%;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;touch-action:pan-x}.path{width:max-content;min-width:max-content}
-  .row{width:100%;min-width:0;box-sizing:border-box}.rowMain{min-width:0;overflow-wrap:anywhere}.rowTitle,.rowSub{overflow-wrap:anywhere}
-  .search input,.form input,.form select,.form textarea{width:100%;min-width:0;box-sizing:border-box}
-  .sim{width:100%;max-width:100%;min-width:0;height:auto!important;min-height:0!important;display:flex!important;flex-direction:column;gap:8px;overflow:visible!important}
-  .simPanel{width:100%;min-width:0;height:auto!important;max-height:none!important;overflow:hidden}.simPanel.center{min-height:360px}.simBody{min-width:0;max-width:100%;overflow:auto;-webkit-overflow-scrolling:touch}.canvas{min-height:360px;overflow:hidden}
-  .tabbar{max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x}.cli{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.cliInput{width:100%;min-width:0;box-sizing:border-box}
-  .mobileNav{position:fixed;left:0;right:0;bottom:0;z-index:1100;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:6px 8px max(6px,env(safe-area-inset-bottom));background:#07111ff7;border-top:1px solid var(--line);backdrop-filter:blur(16px)}
-  .mobileNav button{min-width:0;border:1px solid transparent;background:transparent;color:#9fb1c3;border-radius:9px;padding:6px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.mobileNav button span{font-size:17px;line-height:1}.mobileNav button b{font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.mobileNav button.active{background:#10243a;border-color:#1d405b;color:#fff}
-  html[dir="rtl"] .mobileTop,html[dir="rtl"] .mobileNav{direction:rtl}.ltr,.ip,.ipv4,.cidr,.mac,code,pre,.cli,.cliInput{direction:ltr!important;unicode-bidi:isolate;text-align:left}
+/* ==========================================================
+   VIDO FINAL HEADER / SCROLL ARCHITECTURE
+   - Header is always visible on desktop and mobile.
+   - Mobile uses document scrolling, not a nested viewport scroll.
+   - Language selector is always visible.
+   ========================================================== */
+html,body{
+  width:100%;
+  min-width:0;
+  min-height:100%;
+  margin:0;
+  background:var(--bg);
+}
+body{
+  height:auto;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.app{
+  width:100%;
+  min-width:0;
+  min-height:100svh;
+  height:auto;
+  display:block;
+}
+.top{
+  position:fixed;
+  inset:0 0 auto 0;
+  width:100%;
+  height:62px;
+  min-height:62px;
+  box-sizing:border-box;
+  z-index:10000;
+}
+.body{
+  width:100%;
+  min-width:0;
+  min-height:100svh;
+  padding-top:62px;
+  box-sizing:border-box;
+}
+.main{min-width:0;min-height:0;}
+.view{box-sizing:border-box;}
+.lang{
+  display:flex !important;
+  flex:0 0 auto !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  order:0;
+}
+.lang select{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-width:82px;
+  min-height:38px;
+  cursor:pointer;
+}
+.orientationBtn{min-height:38px;}
+@media(max-width:650px){
+  .top{
+    height:58px;
+    min-height:58px;
+    padding:0 9px;
+    gap:6px;
+  }
+  .body{
+    padding-top:58px;
+    min-height:100svh;
+    display:block;
+  }
+  .side{display:none;}
+  .main{width:100%;min-width:0;}
+  .view{
+    width:100%;
+    min-width:0;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+    padding:11px;
+    padding-bottom:32px;
+  }
+  .lang{margin-left:auto !important;}
+  .lang select{
+    min-width:78px;
+    width:auto;
+    height:38px;
+    font-size:13px;
+  }
+  .orientationBtn{height:38px;font-size:12px;}
+  .top .brand{
+    flex:0 1 auto;
+    min-width:0;
+    max-width:130px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .topTitle,.topStats{display:none !important;}
+  .sim{
+    height:auto !important;
+    min-height:0 !important;
+  }
+  .simPanel.center{height:50svh;min-height:320px;}
+  .simPanel.right{height:auto;max-height:none;}
+}
+@media(min-width:651px){
+  .body{display:grid;grid-template-columns:218px 1fr;}
+  .main{min-height:calc(100svh - 62px);}
+  .view{height:calc(100svh - 62px);overflow:auto;}
 }
 </style>
 </head>
-<body><div class="mobileTop" aria-label="Mobile navigation">
-  <div class="mobileBrand">VIDO <span>TECHNOLOGY</span></div>
-  <select id="mobileLangSelect" class="mobileLang" aria-label="Language">
-    <option value="de">🇩🇪 DE</option>
-    <option value="en">🇬🇧 EN</option>
-    <option value="ar">🇸🇦 AR</option>
-  </select>
-</div>
-<div class="app">
-<header class="top"><div class="brand">VIDO <span>TECHNOLOGY</span></div><div class="topTitle">Interactive IT Learning & Network Simulation Platform</div><div class="lang"><select id="langSelect" aria-label="Language"><option value="de">🇩🇪 DE</option><option value="en">🇬🇧 EN</option><option value="ar">🇸🇦 AR</option></select></div><button class="orientationBtn" id="orientationBtn" type="button" aria-label="Screen orientation">↔ <span id="orientationLabel">Auto</span></button><div class="topStats"><div class="pill">XP <b id="xp">0</b></div><div class="pill">🔥 <b id="streak">0</b></div><div class="pill">Mastery <b id="mastery">0%</b></div><div class="pill">Heute <b id="today">0/5</b></div></div></header>
+<body><div class="app">
+<header class="top"><div class="brand">VIDO <span>TECHNOLOGY</span></div><div class="topTitle">Interactive IT Learning & Network Simulation Platform</div><div class="lang"><select id="langSelect" aria-label="Language / Sprache / اللغة"><option value="de">🇩🇪 DE</option><option value="en">🇬🇧 EN</option><option value="ar">🇸🇦 AR</option></select></div><button class="orientationBtn" id="orientationBtn" type="button" aria-label="Screen orientation">↔ <span id="orientationLabel">Auto</span></button><div class="topStats"><div class="pill">XP <b id="xp">0</b></div><div class="pill">🔥 <b id="streak">0</b></div><div class="pill">Mastery <b id="mastery">0%</b></div><div class="pill">Heute <b id="today">0/5</b></div></div></header>
 <div class="body"><aside class="side">
 <button class="navbtn active" data-route="home">⌂ Start</button><button class="navbtn" data-route="learn">▶ Lernen</button><button class="navbtn" data-route="sim">▣ Cisco Simulator</button><button class="navbtn" data-route="videos">▶ Videos</button><button class="navbtn" data-route="progress">◒ Fortschritt</button><button class="navbtn" data-route="search">⌕ Frage suchen</button><button class="navbtn" data-route="notes">★ Meine Notizen</button><button class="navbtn" data-route="mistakes">! Meine Fehler</button><button class="navbtn" data-route="glossary">A Glossar</button><button class="navbtn" data-route="help">? Hilfe</button><div class="sideBottom"><button class="navbtn" data-route="ihk">◆ IHK Prüfung</button></div>
 </aside><main class="main" id="main">
@@ -257,14 +328,7 @@ html[dir="rtl"] .top{direction:rtl}html[dir="rtl"] .topTitle{border-left:0;borde
 <section class="view" data-view="ihk"><div class="viewInner"><div class="viewHead"><button class="back" data-back>← Zurück</button><h1>IHK Prüfung</h1></div><div class="card"><div class="examTop"><div><div class="eyebrow">EXAM MODE</div><h2 style="margin:3px 0">Praxisnahes IPv4 Training</h2><span class="muted">Keine Hinweise während des Tests. Ergebnisse danach.</span></div><div class="timer" id="timer">30:00</div></div><div class="actions" style="margin-top:13px"><button class="primary" id="startExam">Prüfung starten</button><button class="secondary" id="finishExam">Beenden</button></div><div id="examArea" style="margin-top:13px"></div></div></div></section>
 
 <section class="view" data-view="sim"><div class="viewInner"><div class="viewHead"><button class="back" data-back>← Zurück</button><h1>🖧 Cisco Simulator</h1><span class="muted">VIDO Network Lab</span></div><div class="sim"><div class="simPanel left"><div class="simTitle">Devices & Tools</div><div class="simBody"><button class="deviceBtn" data-add="PC">＋ PC</button><button class="deviceBtn" data-add="Switch">＋ Switch</button><button class="deviceBtn" data-add="Router">＋ Router</button><button class="deviceBtn" data-add="Server">＋ Server</button><hr style="border-color:var(--line)"><button class="deviceBtn" id="simPingBtn">Ping</button><button class="deviceBtn" id="resetTopo">Reset Topology</button></div></div><div class="simPanel center"><div class="tabbar"><button class="tab active" data-tab="topo">Topology</button><button class="tab" data-tab="cli">CLI</button><button class="tab" data-tab="packet">Packet Flow</button><button class="tab" data-tab="routing">Routing</button><button class="tab" data-tab="arp">ARP/MAC</button><button class="tab" data-tab="events">Events</button></div><div class="simBody" style="padding:0;position:relative;flex:1"><div id="topo" class="canvas"><div class="link" style="left:22%;top:42%;width:33%;transform:rotate(0deg)"></div><div class="link" style="left:55%;top:42%;width:25%;transform:rotate(0deg)"></div><div class="device" id="dpc" style="left:8%;top:34%"><b>PC-1</b><small>192.168.10.10</small></div><div class="device" id="dsw" style="left:44%;top:34%"><b>SW-1</b><small>MAC Table</small></div><div class="device" id="dr" style="left:72%;top:34%"><b>R1</b><small>192.168.10.1</small></div><div class="device" id="dsv" style="left:72%;top:64%"><b>Server-1</b><small>10.0.0.10</small></div></div><div id="cli" class="hidden" style="padding:12px"><div class="cli" id="cliOut">VIDO-R1# ready\nType: show ip interface brief\nType: show ip route\nType: show arp</div><input class="cliInput" id="cliIn" placeholder="Router# command"></div><div id="packet" class="hidden" style="padding:12px"><h3>Packet Flow</h3><div class="packet"><span>ARP</span><span>Ethernet</span><span>IP</span><span>Routing</span><span>ICMP</span></div><div class="status" style="margin-top:10px">PC-1 → SW-1 → R1 → Server-1</div></div><div id="routing" class="hidden" style="padding:12px"><h3>Routing Table</h3><div class="list"><div class="row"><span>C 192.168.10.0/24</span><b>Gig0/0</b></div><div class="row"><span>C 10.0.0.0/24</span><b>Gig0/1</b></div><div class="row"><span>S* 0.0.0.0/0</span><b>via 192.168.10.254</b></div></div></div><div id="arp" class="hidden" style="padding:12px"><h3>ARP / MAC</h3><div class="list"><div class="row"><span class="ltr">192.168.10.10</span><b class="ltr">AA:BB:CC:10:10:10</b></div><div class="row"><span class="ltr">10.0.0.10</span><b class="ltr">AA:BB:CC:20:20:20</b></div></div></div><div id="events" class="hidden" style="padding:12px"><div class="list" id="simEvents"></div></div></div></div><div class="simPanel right"><div class="simTitle">Task / Device Properties / Help</div><div class="simBody"><div class="card" style="padding:11px"><h3>Task</h3><p class="muted">Konfiguriere PC-1 für das Netz <span class="ltr">192.168.10.0/24</span>.</p><div class="form"><input id="simIp" value="192.168.10.10"><input id="simMask" value="255.255.255.0"><input id="simGw" value="192.168.10.1"><button class="primary" id="taskCheck">Aufgabe prüfen</button></div><div id="taskResult" class="status" style="margin-top:8px"></div></div><div class="card" style="padding:11px;margin-top:9px"><h3>Help</h3><p class="muted">Prüfe IP, Maske und Gateway. Danach teste die Erreichbarkeit mit Ping.</p><button class="secondary" id="simPing">Ping ausführen</button></div></div></div></div></div></section>
-</main></div><nav class="mobileNav" aria-label="Mobile navigation">
-  <button type="button" data-mobile-route="home"><span>⌂</span><b data-mobile-label="home">Home</b></button>
-  <button type="button" data-mobile-route="learn"><span>▣</span><b data-mobile-label="learn">Learn</b></button>
-  <button type="button" data-mobile-route="sim"><span>⌘</span><b data-mobile-label="sim">Cisco</b></button>
-  <button type="button" data-mobile-route="progress"><span>◔</span><b data-mobile-label="progress">Progress</b></button>
-  <button type="button" data-mobile-route="help"><span>?</span><b data-mobile-label="help">Help</b></button>
-</nav>
-<footer class="bottom">VIDO Technology · Foundation: Navigation · Learning Engine · Cisco Lab · IHK · Progress · Help</footer></div>
+</main></div><footer class="bottom">VIDO Technology · Foundation: Navigation · Learning Engine · Cisco Lab · IHK · Progress · Help</footer></div>
 <script>
 window.VIDO={
 lang:localStorage.getItem('vidoLang')||'de',
@@ -328,7 +392,7 @@ const $=id=>document.getElementById(id); const save=()=>localStorage.setItem('vi
 function overall(){let vals=Object.values(state.mastery);return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0}
 function norm(s){return String(s||'').trim().toLowerCase().replace(/[–—]/g,'-').replace(/\s+/g,'').replace(/\//g,'/').replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u')}
 function setRoute(name,opts={push:true,q:state.current}){if(opts.push&&(route!==name||(name==='learn'&&opts.q!==state.current))){state.history.push({route:route,q:state.current});}route=name;state.lastRoute=name;if(name==='learn'&&opts.q!=null)state.current=opts.q;showView();save()}
-function showView(){document.querySelectorAll('[data-view]').forEach(v=>v.classList.toggle('active',v.dataset.view===route));document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.route===route));document.querySelectorAll('[data-mobile-route]').forEach(b=>b.classList.toggle('active',b.dataset.mobileRoute===route)); if(route==='learn')renderQuestion(); if(route==='home')renderPath(); if(route==='sim')renderSimEvents()}
+function showView(){document.querySelectorAll('[data-view]').forEach(v=>v.classList.toggle('active',v.dataset.view===route));document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.route===route)); if(route==='learn')renderQuestion(); if(route==='home')renderPath(); if(route==='sim')renderSimEvents()}
 function back(){if(state.history.length>1){state.history.pop();let h=state.history[state.history.length-1];route=h.route;state.current=h.q??state.current;state.lastRoute=route;showView();save()}}
 document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>setRoute(b.dataset.route));document.querySelectorAll('[data-route-direct]').forEach(b=>b.onclick=()=>setRoute(b.dataset.routeDirect));document.querySelectorAll('[data-back]').forEach(b=>b.onclick=back);
 function currentSkill(){let q=Q[state.current];return q?.skill||'IPv4 Basics'}
@@ -386,7 +450,7 @@ function translateStatic(){
  document.querySelectorAll('[placeholder]').forEach(e=>{if(e.id==='searchInput'){e.placeholder=(I18N[lang]||I18N.de)[e.placeholder]||e.placeholder}else if(e.id==='answer'||e.id==='examAns'){e.placeholder=lang==='ar'?'الإجابة':lang==='en'?'Answer':'Antwort'}else if(e.id==='cliIn'){e.placeholder=lang==='ar'?'Router# أمر':lang==='en'?'Router# command':'Router# command'}});
 }
 function applyLanguage(){
- document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('langSelect').value=lang;if($('mobileLangSelect'))$('mobileLangSelect').value=lang;
+ document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('langSelect').value=lang;
  const u=window.VIDO.ui[lang]||window.VIDO.ui.de;
  const nav={home:'start',learn:'learn',sim:'sim',videos:'videos',progress:'progress',search:'search',notes:'notes',mistakes:'mistakes',glossary:'glossary',help:'help',ihk:'ihk'};
  document.querySelectorAll('.navbtn[data-route]').forEach(b=>{let k=nav[b.dataset.route];if(k)b.textContent=b.textContent.trim().split(' ')[0]+' '+u[k]});
@@ -407,23 +471,17 @@ function updateOrientationUI(){
   orientationBtn.setAttribute('aria-pressed',orientationMode==='landscape'?'true':'false');
   document.body.classList.toggle('forceLandscape',orientationMode==='landscape');
 }
-async function setOrientationMode(mode){
-  orientationMode=mode;localStorage.setItem('vidoOrientation',mode);document.body.classList.toggle('forceLandscape',mode==='landscape');
-  if(screen.orientation && screen.orientation.unlock) { try{screen.orientation.unlock()}catch(e){} }
-  if(mode==='landscape' && screen.orientation && screen.orientation.lock){
-    try{ await screen.orientation.lock('landscape'); }catch(e){ /* browser may require fullscreen/PWA; CSS landscape support remains active */ }
-  }
+function setOrientationMode(mode){
+  orientationMode=mode;
+  localStorage.setItem('vidoOrientation',mode);
+  document.body.classList.toggle('forceLandscape',mode==='landscape');
   updateOrientationUI();
 }
 if(orientationBtn)orientationBtn.onclick=()=>setOrientationMode(orientationMode==='landscape'?'auto':'landscape');
-function syncLanguageControls(){const a=$("langSelect"),b=$("mobileLangSelect");if(a)a.value=lang;if(b)b.value=lang;}
-function bindMobileUI(){document.querySelectorAll("[data-mobile-route]").forEach(b=>{b.onclick=()=>setRoute(b.dataset.mobileRoute);b.classList.toggle("active",b.dataset.mobileRoute===route)});}
-function updateMobileLabels(){const u=window.VIDO.ui[lang]||window.VIDO.ui.de;const labels={home:u.start,learn:u.learn,sim:u.sim,progress:u.progress,help:u.help};document.querySelectorAll("[data-mobile-label]").forEach(e=>{e.textContent=labels[e.dataset.mobileLabel]||e.dataset.mobileLabel});bindMobileUI();syncLanguageControls();}
-$('langSelect').onchange=e=>{lang=e.target.value;state.lang=lang;localStorage.setItem('vidoLang',lang);save();applyLanguage();updateMobileLabels()};
-$('mobileLangSelect').onchange=e=>{lang=e.target.value;state.lang=lang;localStorage.setItem('vidoLang',lang);save();applyLanguage();updateMobileLabels()};
+$('langSelect').onchange=e=>{lang=e.target.value;state.lang=lang;localStorage.setItem('vidoLang',lang);save();applyLanguage();};
 updateOrientationUI();
 
 function renderAll(){renderStats();renderPath();renderMission();renderLists();renderSkills();renderGlossary();renderVideos();showView();}
-applyLanguage();updateMobileLabels();renderAll();
+applyLanguage();renderAll();
 })();
 </script></body></html>
