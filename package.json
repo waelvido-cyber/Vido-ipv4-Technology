@@ -1,0 +1,17 @@
+{
+  "name": "vido-it-learning-platform",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "server": "node backend/server.js",
+    "audit": "node scripts/audit.mjs",
+    "test": "node scripts/audit.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
