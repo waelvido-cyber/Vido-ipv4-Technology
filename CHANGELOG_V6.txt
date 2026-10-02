@@ -1,0 +1,11 @@
+VIDO Changeable Build V6 — Detailed Why / Solution
+
+- The existing “Why?” action is now a detailed solution view.
+- Arabic: “لماذا؟ · الحل بالتفصيل”. German and English use their own localized labels.
+- Detailed explanations are generated from the current question data and skill, including the given data, technical rule, calculation path, result, and verification.
+- IPv4/Subnetting questions show subnet mask, block size, network, broadcast, host range, and the requested result where applicable.
+- CIDR, Subnet Mask, Usable Hosts, Private IPv4, Loopback and Link-Local receive localized detailed explanations.
+- Existing Help remains progressive and separate; the new Why action is the detailed explanation requested by the user.
+- Foundation features were not removed or replaced.
+- Package version: 2.4.0.
+- Service-worker cache bumped from build-v9 to build-v10.
