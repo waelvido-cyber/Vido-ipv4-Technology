@@ -1,6 +1,10 @@
-VIDO Technology – Final Mobile + Multilingual Build
+VIDO Technology – FINAL OLD UI + DE/EN/AR + Mobile/Desktop
 
-DE / EN / AR language switching is persistent and applies to the platform UI.
-Arabic uses RTL while IP addresses, prefixes, MAC addresses and CLI content remain LTR.
-Portrait mobile is supported; landscape remains available by rotating the device.
-The in-app orientation control is optional and does not replace native device rotation.
+Based on the pre-Duolingo V10 visual interface. Final audited build — Round 3.
+- DE / EN / AR language selector in the top header on desktop and mobile.
+- Arabic RTL with technical IPv4/CIDR/CLI content isolated LTR.
+- Native document scrolling; no forced landscape orientation.
+- Mobile menu with fixed overlay and desktop sidebar.
+- 40 stable Question IDs 0001–0040.
+- Learning state, notes, mistakes, help, videos, progress, glossary, IHK and Cisco Lab.
+- Robust local-state loading/saving and updated service-worker cache (v3).
