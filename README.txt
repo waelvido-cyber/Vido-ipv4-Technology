@@ -1,15 +1,21 @@
-VIDO Technology – Final Old UI / Multilingual / Mobile
+VIDO Technology – IPv4 / IT Learning Platform
 
-Final change set:
-- Preserves the original V10 visual UI; no Duolingo-style redesign.
-- DE / EN / AR language selector is always available.
-- Arabic uses RTL; IP/CIDR/MAC/CLI values remain LTR.
-- Mobile header keeps language and menu controls visible.
-- Question display no longer duplicates the same sentence as a target line.
-- Every question has contextual, step-by-step Help based on its skill/question.
-- Expanded question bank from 40 to 80 questions covering IPv4 basics, binary/decimal, CIDR, masks, subnetting, VLSM, historical classes, private/special/multicast ranges, gateway, routing, ARP, ICMP, DHCP, DNS, VLAN, switching, TCP/UDP, troubleshooting and Cisco commands.
-- “Show Answer” reveals the exact correct answer only when requested.
-- Answer checking no longer clears the feedback immediately.
-- Service Worker cache version bumped to v5.
+Final topic-path + randomized question build.
 
-This package is a static frontend build. Real MP4/AI video generation and a full production backend are not falsely represented as implemented.
+Core IPv4 learning topics are available as selectable paths:
+- Binary
+- CIDR
+- Subnet Mask
+- Network Address
+- Broadcast Address
+- Host Range
+- Usable Hosts
+- Subnetting
+
+The 80-question bank is preserved and expanded. Question order is shuffled on every fresh page/app start. Selecting a topic filters the bank and Previous/Next moves through that topic only. Search by Question ID opens the exact question.
+
+Languages: Deutsch, English, العربية. Arabic uses RTL while IP/CIDR/CLI technical values remain LTR.
+
+Help, Show Answer, Check Feedback, IHK-oriented training, Cisco-style simulator, notes, mistakes, progress and PWA foundation are retained.
+
+This is an educational original question bank; it is not a copy of copyrighted IHK exam questions.
