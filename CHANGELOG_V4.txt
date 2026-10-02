@@ -1,0 +1,14 @@
+VIDO Changeable Build V4 — Language Completeness Fix
+
+Purpose:
+- Enforce strict language separation for question text: German UI -> German question, English UI -> English question, Arabic UI -> Arabic question.
+- English technical terms are retained only where they are genuine IT terms/commands/protocols/IP notation.
+
+Changes:
+- Added explicit English and Arabic question text fields to the first 40 questions that previously relied on an internal translation map.
+- All 300 questions now contain explicit `en` and `ar` question text fields.
+- Reworked question rendering so English/Arabic never fall back to the German question text.
+- Arabic VLSM question now renders: "ماذا يعني VLSM؟" instead of the German question.
+- Preserved German question text unchanged.
+- Bumped package version to 2.2.0.
+- Bumped service-worker cache from build-v7 to build-v8.
