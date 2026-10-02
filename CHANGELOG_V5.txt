@@ -1,0 +1,13 @@
+VIDO Changeable Build V5 — Topic Learning
+
+- Added a dedicated “Nach Thema lernen / Learn by topic / أتعلم حسب الموضوع” program option.
+- Added a topic-selection view with every topic represented by the current 300-question bank (35 topics).
+- Selecting a topic filters the learning queue so Previous/Next stay inside the selected topic.
+- Added “Alle Themen / All topics / كل المواضيع”.
+- Topic names and counts are localized for German, English and Arabic.
+- Arabic topic names remain Arabic, while necessary technical terms stay in English/original form.
+- Selected topic is persisted in learning state.
+- Opening an exact question from Search/Notes/Mistakes resets the topic filter to All Topics so the exact question is preserved.
+- Foundation and existing features remain unchanged.
+- Package version: 2.3.0.
+- Service-worker cache bumped from build-v8 to build-v9.
