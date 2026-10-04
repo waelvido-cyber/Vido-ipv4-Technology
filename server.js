@@ -13,6 +13,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'CHANGE_ME_IN_PRODUCTION';
 const AI_URL = process.env.AI_API_URL || '';
 const AI_KEY = process.env.AI_API_KEY || '';
 const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+const loginAttempts = new Map();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 10;
+function loginKey(req,email){ return `${clientIp(req)||'unknown'}|${email}`; }
+function loginAllowed(req,email){ const now=Date.now(), key=loginKey(req,email); const hit=loginAttempts.get(key); if(!hit || now-hit.started>LOGIN_WINDOW_MS){ loginAttempts.set(key,{started:now,count:0}); return true; } return hit.count < LOGIN_MAX_ATTEMPTS; }
+function noteLoginFailure(req,email){ const now=Date.now(), key=loginKey(req,email); const hit=loginAttempts.get(key); if(!hit || now-hit.started>LOGIN_WINDOW_MS){ loginAttempts.set(key,{started:now,count:1}); } else { hit.count++; } }
+function clearLoginFailures(req,email){ loginAttempts.delete(loginKey(req,email)); }
 
 function token(user){ return jwt.sign({sub:user.id,email:user.email,role:user.role||'user'},JWT_SECRET,{expiresIn:'7d'}); }
 function clientIp(req){ return (req.headers['x-forwarded-for']||req.socket.remoteAddress||'').toString().split(',')[0].trim() || null; }
@@ -33,9 +40,12 @@ app.post('/api/auth/register', async (req,res)=>{
 });
 app.post('/api/auth/login', async (req,res)=>{
   if(!requireDb(res)) return; const {email,password}=req.body||{};
-  const cleanEmail=String(email||'').toLowerCase().trim(); const r=await pool.query('SELECT id,email,password_hash,role,status FROM users WHERE email=$1',[cleanEmail]);
-  if(!r.rowCount||!(await bcrypt.compare(String(password||''),r.rows[0].password_hash))) { await logSecurity({email:cleanEmail,eventType:'login_failed',req}); return res.status(401).json({error:'invalid credentials'}); }
+  const cleanEmail=String(email||'').toLowerCase().trim();
+  if(!loginAllowed(req,cleanEmail)){ await logSecurity({email:cleanEmail,eventType:'login_rate_limited',req}); return res.status(429).json({error:'too_many_login_attempts'}); }
+  const r=await pool.query('SELECT id,email,password_hash,role,status FROM users WHERE email=$1',[cleanEmail]);
+  if(!r.rowCount||!(await bcrypt.compare(String(password||''),r.rows[0].password_hash))) { noteLoginFailure(req,cleanEmail); await logSecurity({email:cleanEmail,eventType:'login_failed',req}); return res.status(401).json({error:'invalid credentials'}); }
   if(r.rows[0].status!=='active'){ await logSecurity({userId:r.rows[0].id,email:cleanEmail,eventType:'login_blocked',req}); return res.status(403).json({error:'account_suspended'}); }
+  clearLoginFailures(req,cleanEmail);
   await pool.query('UPDATE users SET last_login_at=NOW(),last_ip=$2,last_user_agent=$3 WHERE id=$1',[r.rows[0].id,clientIp(req),ua(req)]); await logSecurity({userId:r.rows[0].id,email:cleanEmail,eventType:'login_success',req}); await logActivity({userId:r.rows[0].id,eventType:'login',route:'/account',req});
   res.json({token:token(r.rows[0]),user:{id:r.rows[0].id,email:r.rows[0].email,role:r.rows[0].role,status:r.rows[0].status}});
 });
@@ -48,6 +58,12 @@ app.get('/api/admin/activity',auth,adminUser,async(req,res)=>{if(!requireDb(res)
 app.get('/api/admin/security',auth,adminUser,async(req,res)=>{if(!requireDb(res))return; const r=await pool.query("SELECT s.id,s.email,s.event_type,s.ip::text ip,s.user_agent,s.created_at,u.email user_email FROM security_log s LEFT JOIN users u ON u.id=s.user_id ORDER BY s.created_at DESC LIMIT 300");res.json(r.rows);});
 app.post('/api/admin/users/:id/status',auth,adminUser,ownerOnly,async(req,res)=>{if(!requireDb(res))return; const status=req.body?.status; if(!['active','suspended'].includes(status))return res.status(400).json({error:'invalid_status'}); await pool.query('UPDATE users SET status=$2 WHERE id=$1',[req.params.id,status]); await pool.query('INSERT INTO audit_log(actor_user_id,action,target_type,target_id,metadata) VALUES($1,$2,$3,$4,$5)',[req.user.sub,'change_user_status','user',req.params.id,{status}]);res.json({ok:true});});
 app.post('/api/admin/users/:id/role',auth,adminUser,ownerOnly,async(req,res)=>{if(!requireDb(res))return; const role=req.body?.role; const roles=['owner','super_admin','content_manager','video_manager','lab_manager','analyst','user']; if(!roles.includes(role))return res.status(400).json({error:'invalid_role'}); await pool.query('UPDATE users SET role=$2 WHERE id=$1',[req.params.id,role]); await pool.query('INSERT INTO audit_log(actor_user_id,action,target_type,target_id,metadata) VALUES($1,$2,$3,$4,$5)',[req.user.sub,'change_user_role','user',req.params.id,{role}]);res.json({ok:true});});
+
+app.get('/api/admin/audit',auth,adminUser,async(req,res)=>{ if(!requireDb(res))return; const r=await pool.query("SELECT a.id,a.action,a.target_type,a.target_id,a.metadata,a.created_at,u.email actor_email FROM audit_log a LEFT JOIN users u ON u.id=a.actor_user_id ORDER BY a.created_at DESC LIMIT 300"); res.json(r.rows); });
+app.get('/api/admin/system',auth,adminUser,async(req,res)=>{ if(!requireDb(res))return; const r=await pool.query("SELECT role,COUNT(*)::int count FROM users GROUP BY role ORDER BY role"); res.json({node:process.version,environment:process.env.NODE_ENV||'development',database:true,ai:!!(AI_URL&&AI_KEY),roles:r.rows}); });
+app.post('/api/admin/users',auth,adminUser,ownerOnly,async(req,res)=>{ if(!requireDb(res))return; const email=String(req.body?.email||'').toLowerCase().trim(); const password=String(req.body?.password||''); const role=String(req.body?.role||'user'); const roles=['owner','super_admin','content_manager','video_manager','lab_manager','analyst','user']; if(!email||!/^\S+@\S+\.\S+$/.test(email)||password.length<8||!roles.includes(role)) return res.status(400).json({error:'email,password(8+),and valid role required'}); try{ const hash=await bcrypt.hash(password,12); const r=await pool.query("INSERT INTO users(email,password_hash,role,status) VALUES($1,$2,$3,'active') RETURNING id,email,role,status,created_at",[email,hash,role]); await pool.query('INSERT INTO audit_log(actor_user_id,action,target_type,target_id,metadata) VALUES($1,$2,$3,$4,$5)',[req.user.sub,'create_user','user',r.rows[0].id,{email,role}]); res.status(201).json(r.rows[0]); }catch(e){res.status(409).json({error:e.code==='23505'?'email already registered':'user creation failed'});} });
+app.post('/api/admin/users/:id/password',auth,adminUser,ownerOnly,async(req,res)=>{ if(!requireDb(res))return; const password=String(req.body?.password||''); if(password.length<8)return res.status(400).json({error:'password must be 8+ characters'}); const hash=await bcrypt.hash(password,12); const r=await pool.query('UPDATE users SET password_hash=$2 WHERE id=$1 RETURNING email',[req.params.id,hash]); if(!r.rowCount)return res.status(404).json({error:'user_not_found'}); await pool.query('INSERT INTO audit_log(actor_user_id,action,target_type,target_id,metadata) VALUES($1,$2,$3,$4,$5)',[req.user.sub,'reset_user_password','user',req.params.id,{}]); res.json({ok:true,email:r.rows[0].email}); });
+app.delete('/api/admin/users/:id',auth,adminUser,ownerOnly,async(req,res)=>{ if(!requireDb(res))return; if(req.params.id===req.user.sub)return res.status(400).json({error:'cannot_delete_current_owner'}); const r=await pool.query('DELETE FROM users WHERE id=$1 RETURNING email',[req.params.id]); if(!r.rowCount)return res.status(404).json({error:'user_not_found'}); await pool.query('INSERT INTO audit_log(actor_user_id,action,target_type,target_id,metadata) VALUES($1,$2,$3,$4,$5)',[req.user.sub,'delete_user','user',req.params.id,{email:r.rows[0].email}]); res.json({ok:true}); });
 
 app.get('/api/state',auth,async(req,res)=>{if(!requireDb(res))return; const r=await pool.query('SELECT state FROM app_state WHERE user_id=$1',[req.user.sub]);res.json(r.rowCount?r.rows[0].state:null);});
 app.put('/api/state',auth,async(req,res)=>{if(!requireDb(res))return; const state=req.body?.state; if(!state)return res.status(400).json({error:'state required'}); await pool.query(`INSERT INTO app_state(user_id,state) VALUES($1,$2) ON CONFLICT(user_id) DO UPDATE SET state=EXCLUDED.state,updated_at=NOW()`,[req.user.sub,state]);res.json({ok:true});});

@@ -1,0 +1,20 @@
+VIDO CHANGEABLE BUILD V12 — OWNER CONTROL CENTER
+
+Built directly from V11. Foundation file unchanged.
+
+Added:
+- Owner Control Center with multilingual labels.
+- Owner-only create user, role change, status change, password reset and account deletion controls.
+- Activity, Security and Administrative Audit views.
+- System/role statistics view.
+- Backend login rate limiting for repeated failures.
+- Self-deletion protection for the current owner.
+- Service-worker cache version bumped for the new deployment.
+
+Preserved:
+- Existing VIDO learning dashboard, 300-question engine, learning path, Cisco Simulator, IHK mode, tutor, progress and help architecture.
+- Foundation contract and V11 backend authentication model.
+
+Note:
+- Real administration still requires PostgreSQL, backend environment variables and a deployed Node.js server.
+- Exact location/address tracking is not implemented.
