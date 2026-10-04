@@ -1,0 +1,26 @@
+VIDO CHANGEABLE BUILD V11 — ADMIN FOUNDATION
+
+Built from the current V10 working build.
+
+Added:
+- Owner/Admin role model with owner, super_admin, content_manager, video_manager, lab_manager, analyst and user roles.
+- Secure password hashing remains server-side; no admin password is embedded in the frontend.
+- Owner bootstrap via OWNER_EMAIL / OWNER_PASSWORD environment variables.
+- Admin Dashboard with user count, active users (15m), activity (24h), and failed-login metrics.
+- User Management view with registration time, last login, IP, device/browser, role and status.
+- Activity log for route/view activity, login and registration events.
+- Security log for successful, failed and blocked login events.
+- Owner-only role/status management API endpoints.
+- Audit log for administrative changes.
+- Frontend Admin view, hidden from non-admin users.
+- Mobile-friendly admin tables.
+- Approximate-location fields (country/city) are stored only when supplied by a trusted proxy/geolocation layer; no precise home address tracking is implemented.
+
+Preserved:
+- VIDO Foundation contract.
+- V10 Learning Path, Daily Mission and Focus training.
+- Existing question engine and Cisco/IHK/Help/Progress architecture.
+
+Important deployment note:
+- Real multi-user administration requires a deployed backend + PostgreSQL database and secure environment variables.
+- Do not use the default JWT_SECRET or example owner password in production.

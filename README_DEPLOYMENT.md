@@ -23,3 +23,13 @@ node scripts/audit.mjs index.html
 ```
 
 The audit must pass before a build is treated as final.
+
+
+## V11 Admin Foundation
+Set these server environment variables in production:
+- DATABASE_URL
+- JWT_SECRET (long random secret)
+- OWNER_EMAIL
+- OWNER_PASSWORD (strong unique password)
+
+The Admin panel is available only after backend authentication and an admin role check. Approximate city/country should only be populated by a trusted reverse proxy or a compliant geolocation service; the app does not attempt to determine a user's precise address.
