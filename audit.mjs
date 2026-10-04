@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const html=fs.readFileSync('index.html','utf8');
+const input=process.argv[2]||'index.html';
+const html=fs.readFileSync(input,'utf8');
 const ids=[...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m=>m[1]);
 assert.equal(new Set(ids).size,ids.length,'duplicate HTML ids');
 const start=html.indexOf('const Q=['); assert(start>=0,'Q array not found'); let depth=0, end=-1, inStr=false, quote=''; for(let i=start+8;i<html.length;i++){const c=html[i],p=html[i-1]; if(inStr){if(c===quote&&p!=='\\')inStr=false; continue;} if(c==='\"'||c==="'"){inStr=true;quote=c;continue;} if(c==='[')depth++; else if(c===']'){depth--; if(depth===0){end=i+1;break;}}} assert(end>0,'Q array end not found'); const Q=Function(`return ${html.slice(start+8,end)}`)();

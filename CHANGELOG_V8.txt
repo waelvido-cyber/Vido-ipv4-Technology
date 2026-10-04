@@ -1,0 +1,8 @@
+VIDO CHANGEABLE BUILD V8
+
+Added privacy-friendly visitor analytics using Plausible Analytics.
+Configured site domain: waelvido-cyber.github.io
+Tracks aggregate visitors/pageviews and selected learning interactions.
+No names, passwords, email addresses, IP addresses or other direct identity fields are sent by the VIDO analytics integration.
+The site owner must create/add the site in Plausible and use the dashboard to view data.
+Foundation remains unchanged; this is a changeable-build addition only.

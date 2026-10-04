@@ -1,0 +1,8 @@
+VIDO CHANGEABLE BUILD V9
+
+Infrastructure and verification release.
+- V8 remains the functional base; no foundation feature was removed.
+- Audit script now accepts an optional HTML path, making verification reproducible from any working directory.
+- Package version advanced to 2.6.0.
+- Added deployment documentation for the static/PWA frontend.
+- Foundation file remains unchanged and immutable.

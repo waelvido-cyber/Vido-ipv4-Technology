@@ -1,0 +1,10 @@
+VIDO CHANGEABLE BUILD V10
+
+Dashboard + Learning Path release.
+- Added a dedicated adaptive Learning Path view.
+- Added Daily Mission with persistent daily progress.
+- Added Focus training recommendation based on lowest skill mastery and mistakes.
+- Added mobile-friendly dashboard cards for mission and focus.
+- Preserved the V9 question bank (300 stable IDs) and foundation features.
+- Updated package version to 2.7.0.
+- Foundation file remains unchanged and immutable.
