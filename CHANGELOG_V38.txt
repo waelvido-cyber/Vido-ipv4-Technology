@@ -1,0 +1,7 @@
+VIDO Technology — V38
+
+- Corrected authentication UI localization in DE/EN/AR.
+- Added proper RTL handling for Arabic auth UI.
+- Localized E-Mail, Passwort, Forgot Password, registration footer, and registration-mode labels.
+- Registration footer now changes correctly between sign-in and registration modes.
+- Preserved V37 authentication/backend behavior and existing features.

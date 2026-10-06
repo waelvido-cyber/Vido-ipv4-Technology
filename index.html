@@ -93,6 +93,21 @@ window.vidoTrack = function(eventName, props) {
 .authGate{position:fixed;inset:0;z-index:9999;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#0f172a,#1e3a8a);font-family:Arial,sans-serif}
 .authGate[hidden]{display:none}
 .authGate *{box-sizing:border-box}
+.authGate .login-box{direction:ltr}
+.authGate .login-box[dir="rtl"]{direction:rtl}
+.authGate.rtl .login-box{direction:rtl}
+.authGate.rtl .input-group label,.authGate.rtl .register{text-align:right}
+.authGate.rtl .options{direction:rtl}
+.authGate.rtl .options label{flex-direction:row}
+.authGate.rtl .options a{white-space:nowrap}
+.authGate.rtl .login-btn,.authGate.rtl .admin-btn{font-family:inherit}
+.authGate.rtl #gateEmail{direction:ltr;text-align:left}
+.authGate.rtl #gatePassword,.authGate.rtl #gatePasswordConfirm{direction:rtl;text-align:right}
+.authGate.rtl .password-toggle{right:8px;left:auto}
+.authGate.rtl .auth-brand,.authGate.rtl h1,.authGate.rtl .authGateSub{direction:rtl}
+.authGate .register{line-height:1.7}
+.authGate .auth-register-prompt{display:inline}
+
 .login-box{width:min(380px,90vw);padding:40px;background:rgba(255,255,255,.10);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,.20);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.30);color:#fff}
 .auth-brand{text-align:center;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:#93c5fd;margin-bottom:10px}
 .login-box h1{text-align:center;margin:0 0 10px;font-size:28px}
@@ -116,18 +131,18 @@ window.vidoTrack = function(eventName, props) {
 <p id="authGateSub">Bitte melden Sie sich an</p>
 <form id="authForm" novalidate>
 <div class="input-group">
-<label for="gateEmail">E-Mail</label>
+<label for="gateEmail" id="gateEmailLabel">E-Mail</label>
 <input id="gateEmail" name="username" type="text" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="name@example.com" required>
 </div>
 <div class="input-group">
-<label for="gatePassword">Passwort</label>
+<label for="gatePassword" id="gatePasswordLabel">Passwort</label>
 <div class="password-box">
 <input id="gatePassword" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
 <button type="button" id="gatePasswordToggle" class="password-toggle" aria-label="Passwort anzeigen" title="Passwort anzeigen">👁</button>
 </div>
 </div>
 <div class="input-group" id="gatePasswordConfirmRow" hidden>
-<label for="gatePasswordConfirm">Passwort bestätigen</label>
+<label for="gatePasswordConfirm" id="gatePasswordConfirmLabel">Passwort bestätigen</label>
 <div class="password-box">
 <input id="gatePasswordConfirm" name="password_confirmation" type="password" autocomplete="new-password" placeholder="••••••••">
 <button type="button" id="gatePasswordConfirmToggle" class="password-toggle" aria-label="Passwort anzeigen" title="Passwort anzeigen">👁</button>
@@ -142,7 +157,7 @@ window.vidoTrack = function(eventName, props) {
 <button type="button" class="admin-btn" id="gateAdmin" hidden>Admin Schnelllogin</button>
 </div>
 <div id="gateMsg" class="login-message" role="status" aria-live="polite" aria-atomic="true"></div>
-<div class="register">Noch kein Konto? <a href="#" id="gateRegister">Registrieren</a></div>
+<div class="register" id="authRegisterFooter"><span id="authRegisterPrompt">Noch kein Konto?</span> <a href="#" id="gateRegister">Registrieren</a></div>
 </form>
 </div></div></div><div class="mobileOverlay" hidden="hidden" id="mobileOverlay"></div>
 <div class="app" id="app">
@@ -705,14 +720,14 @@ window.vidoCore={
   const authGate=$('authGate');
   let authRegisterMode=false;
   function gateStatus(msg){if($('gateMsg'))$('gateMsg').textContent=msg||''}
-  function applyAuthGateText(){if(!$('authGate'))return;const m={title:t('auth_title'),sub:t('auth_sub'),email:t('auth_email'),password:t('auth_password'),login:t('auth_login'),admin:t('auth_admin'),hint:t('auth_hint'),register:t('auth_register'),registerMode:t('auth_register_mode'),confirm:t('auth_register_confirm'),back:t('auth_back_login')};$('authGateTitle').textContent=authRegisterMode?m.registerMode:m.title;$('authGateSub').textContent=authRegisterMode?m.registerMode:m.sub;$('gateEmail').placeholder=m.email;$('gatePassword').placeholder=m.password;$('gatePasswordConfirm').placeholder=m.confirm;$('gateLogin').textContent=m.login;$('gateAdmin').textContent=m.admin;$('gateRegister').textContent=authRegisterMode?m.back:m.register;$('gateHint').textContent=m.hint;updateAdminTrigger()}
+  function applyAuthGateText(){if(!$('authGate'))return;const current=getLang();const m={title:t('auth_title'),sub:t('auth_sub'),email:t('auth_email'),password:t('auth_password'),login:t('auth_login'),admin:t('auth_admin'),hint:t('auth_hint'),register:t('auth_register'),registerMode:t('auth_register_mode'),confirm:t('auth_register_confirm'),back:t('auth_back_login')};const emailLabel=current==='ar'?'البريد الإلكتروني':current==='en'?'Email':'E-Mail';const passLabel=current==='ar'?'كلمة المرور':current==='en'?'Password':'Passwort';const prompt=current==='ar'?(authRegisterMode?'لديك حساب؟':'ليس لديك حساب؟'):current==='en'?(authRegisterMode?'Already have an account?':'Don’t have an account?'):(authRegisterMode?'Bereits ein Konto?':'Noch kein Konto?');const registerAction=authRegisterMode?m.back:m.register;$('authGateTitle').textContent=authRegisterMode?m.registerMode:m.title;$('authGateSub').textContent=authRegisterMode?m.registerMode:m.sub;$('gateEmailLabel').textContent=emailLabel;$('gatePasswordLabel').textContent=passLabel;$('gatePasswordConfirmLabel').textContent=m.confirm;$('gateEmail').placeholder=m.email;$('gatePassword').placeholder=m.password;$('gatePasswordConfirm').placeholder=m.confirm;$('gateLogin').textContent=m.login;$('gateAdmin').textContent=m.admin;$('gateRegister').textContent=registerAction;$('authRegisterPrompt').textContent=prompt;$('gateHint').textContent=m.hint;$('forgotPasswordLink').textContent=current==='ar'?'نسيت كلمة المرور؟':current==='en'?'Forgot password?':'Passwort vergessen?';$('authGate').classList.toggle('rtl',current==='ar');updateAdminTrigger()}
   function setLogoutVisible(show){const b=$('logoutBtn');if(b)b.classList.toggle('visible',!!show)}
   function unlockApp(user){engineState.token=engineState.token||null;engineState.role=user?.role||engineState.role||null;engineState.email=user?.email||engineState.email||null;persist();document.body.classList.remove('authLocked');if(authGate)authGate.hidden=true;setLogoutVisible(true);checkAdminAccess();}
   function logout(){engineState.token=null;engineState.role=null;engineState.email=null;engineState.review={};engineState.sessionEvents=[];engineState.lastRecorded=null;sessionStorage.removeItem('vidoEngineV2');document.body.classList.add('authLocked');if(authGate)authGate.hidden=false;showAdminButton(false);setLogoutVisible(false);if($('gatePassword'))$('gatePassword').value='';if($('gateMsg'))$('gateMsg').textContent='';if($('gateEmail'))$('gateEmail').value='';if($('gatePasswordConfirm'))$('gatePasswordConfirm').value='';authRegisterMode=false;if($('gatePasswordConfirmRow'))$('gatePasswordConfirmRow').hidden=true;if($('gatePasswordConfirm'))$('gatePasswordConfirm').hidden=true;applyAuthGateText();setRoute('home',false);}
   async function validateStoredSession(){if(!engineState.token){setLogoutVisible(false);return false}try{const r=await api('/auth/me');if(!r.ok)throw new Error();const d=await r.json();unlockApp(d.user);return true}catch{engineState.token=null;engineState.role=null;engineState.email=null;sessionStorage.setItem('vidoEngineV2',JSON.stringify(engineState));setLogoutVisible(false);return false}}
   async function gateLogin(){const email=$('gateEmail').value.trim(),password=$('gatePassword').value;if(!email||!password)return gateStatus(t('auth_failed'));gateStatus('');try{const r=await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'login');engineState.token=d.token;engineState.role=d.user?.role||null;engineState.email=d.user?.email||email;unlockApp(d.user);accountStatus(getLang()==='ar'?'تم تسجيل الدخول.':getLang()==='en'?'Signed in.':'Angemeldet.');sync()}catch(e){gateStatus(t('auth_failed'))}}
   async function gateRegister(){const email=$('gateEmail').value.trim(),password=$('gatePassword').value,confirm=$('gatePasswordConfirm').value;if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||password!==confirm)return gateStatus(t('auth_register_failed'));gateStatus('');try{const r=await api('/auth/register',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'register');engineState.token=d.token;engineState.role=d.user?.role||'user';engineState.email=d.user?.email||email;unlockApp(d.user);accountStatus(t('auth_register_success'));sync()}catch(e){gateStatus(e.message==='email already registered'?(getLang()==='ar'?'البريد الإلكتروني مستخدم مسبقًا.':getLang()==='en'?'Email is already registered.':'E-Mail ist bereits registriert.'):t('auth_register_failed'))}}
-  function toggleAuthRegister(){authRegisterMode=!authRegisterMode;$('gatePasswordConfirmRow').hidden=!authRegisterMode;$('gatePasswordConfirm').hidden=!authRegisterMode;$('gateAdmin').hidden=authRegisterMode||(($('gateEmail')?.value||'').trim().toLowerCase()!=='admin');$('gateLogin').hidden=authRegisterMode;$('gateRegister').textContent=authRegisterMode?t('auth_back_login'):t('auth_register');if(authRegisterMode){$('authGateTitle').textContent=t('auth_register_mode');$('authGateSub').textContent=t('auth_register_mode')}else{applyAuthGateText()}gateStatus('')}
+  function toggleAuthRegister(){authRegisterMode=!authRegisterMode;$('gatePasswordConfirmRow').hidden=!authRegisterMode;$('gatePasswordConfirm').hidden=!authRegisterMode;$('gateAdmin').hidden=authRegisterMode||(($('gateEmail')?.value||'').trim().toLowerCase()!=='admin');$('gateLogin').hidden=authRegisterMode;applyAuthGateText();gateStatus('')}
   function updateAdminTrigger(){const e=$('gateEmail'),b=$('gateAdmin');if(!b)return;const isAdmin=!authRegisterMode&&(e?.value||'').trim().toLowerCase()==='admin';b.hidden=!isAdmin} async function gateAdminLogin(){const password=$('gatePassword').value;if(!password)return gateStatus(t('auth_admin_failed'));gateStatus('');try{const r=await api('/auth/quick-admin',{method:'POST',body:JSON.stringify({username:'Admin',password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'admin');engineState.token=d.token;engineState.role='owner';engineState.email=d.user?.email||'admin';unlockApp(d.user);accountStatus(getLang()==='ar'?'تم تسجيل دخول Admin.':getLang()==='en'?'Admin signed in.':'Admin angemeldet.');sync()}catch(e){gateStatus(t('auth_admin_failed'))}}
   $('authForm')?.addEventListener('submit',e=>{e.preventDefault();if(authRegisterMode)gateRegister();else gateLogin()});$('gateAdmin')?.addEventListener('click',gateAdminLogin);$('gateRegister')?.addEventListener('click',()=>authRegisterMode?gateRegister():toggleAuthRegister());$('logoutBtn')?.addEventListener('click',logout);$('gateEmail')?.addEventListener('input',updateAdminTrigger);$('forgotPasswordLink')?.addEventListener('click',e=>{e.preventDefault();gateStatus(getLang()==='ar'?'استعادة كلمة المرور تحتاج إلى خدمة إعادة تعيين مفعّلة على الخادم.':getLang()==='en'?'Password reset is not configured on this server yet.':'Die Passwort-Wiederherstellung ist auf diesem Server noch nicht eingerichtet.');});$('gatePasswordConfirm')?.addEventListener('keydown',e=>{if(e.key==='Enter')gateRegister()});updateAdminTrigger();
   function accountStatus(msg){if($('accountStatus'))$('accountStatus').textContent=msg}
