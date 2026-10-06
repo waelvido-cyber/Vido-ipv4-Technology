@@ -1,0 +1,12 @@
+VIDO Technology — V36
+
+Authentication UX hardening and cleanup.
+- Rebuilt the login gate around a standard HTML form with semantic labels and submit behavior.
+- Added explicit autocomplete/input-purpose attributes for username and current/new passwords.
+- Kept exactly one password visibility control per visible password field.
+- Kept Admin Schnelllogin hidden by default and revealed only when the username is exactly "Admin" (case-insensitive).
+- Preserved "Angemeldet bleiben" and moved its remembered-session key to V36 to avoid stale V32 state.
+- Removed the duplicate Enter-key login path so form submission is the single normal login path.
+- Added keyboard-focus accessibility and disabled-button styling.
+- No authentication backend contract was invented or changed; existing /api/auth/login, /api/auth/register and /api/auth/quick-admin remain authoritative.
+- Authentication errors remain generic to reduce account enumeration risk.
