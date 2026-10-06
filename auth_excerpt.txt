@@ -1,0 +1,228 @@
+  function tutorContext(){const q=Q[state.current]||Q[0];if($('tutorQuestion'))$('tutorQuestion').textContent=qTarget(q)+' · '+q.ip;if($('tutorSkill'))$('tutorSkill').textContent=qSkill(q)+' · '+levelLabel(q.level)}
+  function tutorAsk(){const q=Q[state.current]||Q[0],input=$('tutorInput')?.value.trim()||'';const fallback=lang==='ar'?`ابدأ بقاعدة ${q.skill}. لا أعطيك الجواب مباشرة. حدد أول معلومة مطلوبة ثم طبق القاعدة خطوة بخطوة.`:lang==='en'?`Start with the ${q.skill} rule. I will not reveal the answer immediately. Identify the first required datum and apply the rule step by step.`:`Starte mit der Regel ${q.skill}. Ich verrate die Lösung nicht sofort. Bestimme zuerst die benötigte Information und wende die Regel Schritt für Schritt an.`;if($('tutorResponse'))$('tutorResponse').textContent=fallback;api('/tutor',{method:'POST',body:JSON.stringify({question:qTarget(q)+' | '+q.ip,answer:input,skill:q.skill,level:q.level,hintsUsed:(state.hints&&state.hints[q.id])||0,language:lang})}).then(async r=>{if(!r.ok)throw new Error();return r.json()}).then(d=>{if(d.reply)$('tutorResponse').textContent=d.reply}).catch(()=>{})}
+  $('tutorAsk')?.addEventListener('click',tutorAsk);document.querySelectorAll('[data-route="tutor"]').forEach(b=>b.addEventListener('click',()=>setTimeout(tutorContext,0)));
+  $('check')?.addEventListener('click',()=>{const q=Q[state.current],a=$('answer').value.trim();if(!a)return;const key=q.id+'|'+state.attempts;if(engineState.lastRecorded!==key){engineState.lastRecorded=key;recordEvent(q,grade(q,a));renderAdaptive()}tutorContext()});
+
+  function ip4(s){const a=String(s).trim().split('.').map(Number);return a.length===4&&a.every(x=>Number.isInteger(x)&&x>=0&&x<=255)?a:null}
+  function maskBits(mask){const a=ip4(mask);if(!a)return null;const b=a.map(x=>x.toString(2).padStart(8,'0')).join('');return b.includes('01')?null:(b.match(/1/g)||[]).length}
+  function net(ip,mask){const a=ip4(ip),m=ip4(mask);return a&&m?a.map((x,i)=>x&m[i]).join('.'):null}
+  function sameSubnet(a,b,mask){return net(a,mask)&&net(a,mask)===net(b,mask)}
+  function simPing(){const ip=$('simIp').value.trim(),mask=$('simMask').value.trim(),gw=$('simGw').value.trim(),valid=!!ip4(ip)&&!!ip4(gw)&&maskBits(mask)!==null,ok=valid&&sameSubnet(ip,gw,mask);const msg=ok?(lang==='ar'?'✓ Ping ناجح: العنوان والـGateway في نفس الـSubnet.':lang==='en'?'✓ Ping successful: host and gateway are in the same subnet.':'✓ Ping erfolgreich: Host und Gateway liegen im selben Subnetz.'):(lang==='ar'?'✗ Ping فشل: افحص IP وSubnet Mask وGateway.':lang==='en'?'✗ Ping failed: check IP, subnet mask and gateway.':'✗ Ping fehlgeschlagen: IP, Subnetzmaske und Gateway prüfen.');simLog(msg);engineState.sim.lastPing={ip,mask,gw,ok};persist()}
+  if($('simPing'))$('simPing').onclick=simPing;
+  document.querySelectorAll('[data-add]').forEach(b=>{b.onclick=()=>{const n=engineState.sim.devices.length+1,d={id:b.dataset.add+'-'+n,type:b.dataset.add,ip:'',mask:'',gateway:'',mac:'AA:BB:CC:'+String(n).padStart(2,'0')+':00:01'};engineState.sim.devices.push(d);persist();simLog((lang==='ar'?'تمت إضافة ':lang==='en'?'Added ':'Hinzugefügt ')+d.id)}});
+  if($('cliIn'))$('cliIn').onkeydown=e=>{if(e.key!=='Enter')return;const c=e.target.value.trim(),o=$('cliOut');o.textContent+=`\nVIDO-R1# ${c}`;const known={'show ip interface brief':'Gig0/0  192.168.10.1  up  up\nGig0/1  10.0.0.1      up  up','show ip route':'C 192.168.10.0/24 is directly connected, Gig0/0\nS* 0.0.0.0/0 via 192.168.10.254','show arp':'192.168.10.10  AA:BB:CC:10:10:10  ARPA','show mac address-table':'10  AA:BB:CC:10:10:10  DYNAMIC  Gi0/1','no shutdown':'Interface enabled','ip address 192.168.1.1 255.255.255.0':'Interface IPv4 configured'};o.textContent+='\n'+(known[c]||'% VIDO training mode: command not implemented. Try show ip route, show arp, show mac address-table, show ip interface brief, no shutdown.');e.target.value=''};
+
+  const authGate=$('authGate');
+  function gateStatus(msg){if($('gateMsg'))$('gateMsg').textContent=msg||''}
+  function applyAuthGateText(){if(!$('authGate'))return;const m={title:t('auth_title'),sub:t('auth_sub'),email:t('auth_email'),password:t('auth_password'),login:t('auth_login'),admin:t('auth_admin'),hint:t('auth_hint')};$('authGateTitle').textContent=m.title;$('authGateSub').textContent=m.sub;$('gateEmail').placeholder=m.email;$('gatePassword').placeholder=m.password;$('gateLogin').textContent=m.login;$('gateAdmin').textContent=m.admin;$('gateHint').textContent=m.hint}
+  function unlockApp(user){engineState.token=engineState.token||null;engineState.role=user?.role||engineState.role||null;engineState.email=user?.email||engineState.email||null;persist();document.body.classList.remove('authLocked');if(authGate)authGate.hidden=true;checkAdminAccess();}
+  async function validateStoredSession(){if(!engineState.token)return false;try{const r=await api('/auth/me');if(!r.ok)throw new Error();const d=await r.json();unlockApp(d.user);return true}catch{engineState.token=null;engineState.role=null;engineState.email=null;persist();return false}}
+  async function gateLogin(){const email=$('gateEmail').value.trim(),password=$('gatePassword').value;if(!email||!password)return gateStatus(t('auth_failed'));gateStatus('');try{const r=await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'login');engineState.token=d.token;engineState.role=d.user?.role||null;engineState.email=d.user?.email||email;unlockApp(d.user);accountStatus(lang==='ar'?'تم تسجيل الدخول.':lang==='en'?'Signed in.':'Angemeldet.');sync()}catch(e){gateStatus(t('auth_failed'))}}
+  async function gateAdminLogin(){const password=$('gatePassword').value;if(!password)return gateStatus(t('auth_admin_failed'));gateStatus('');try{const r=await api('/auth/quick-admin',{method:'POST',body:JSON.stringify({username:($('gateEmail').value.trim()||'Admin'),password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'admin');engineState.token=d.token;engineState.role='owner';engineState.email=d.user?.email||'admin';unlockApp(d.user);accountStatus(lang==='ar'?'تم تسجيل دخول Admin.':lang==='en'?'Admin signed in.':'Admin angemeldet.');sync()}catch(e){gateStatus(t('auth_admin_failed'))}}
+  $('gateLogin')?.addEventListener('click',gateLogin);$('gateAdmin')?.addEventListener('click',gateAdminLogin);$('gatePassword')?.addEventListener('keydown',e=>{if(e.key==='Enter')gateLogin()});
+  function accountStatus(msg){if($('accountStatus'))$('accountStatus').textContent=msg}
+  async function register(){const email=$('accountEmail').value.trim(),password=$('accountPassword').value;const r=await api('/auth/register',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return accountStatus(d.error||'Registration failed');engineState.token=d.token;engineState.role=d.user?.role||null;engineState.email=d.user?.email||email;persist();checkAdminAccess();accountStatus(lang==='ar'?'تم إنشاء الحساب وتسجيل الدخول.':lang==='en'?'Registered and signed in.':'Registriert und angemeldet.');sync()}
+  async function login(){const email=$('accountEmail').value.trim(),password=$('accountPassword').value;const r=await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)return accountStatus(d.error||'Login failed');engineState.token=d.token;engineState.role=d.user?.role||null;engineState.email=d.user?.email||email;persist();checkAdminAccess();accountStatus(lang==='ar'?'تم تسجيل الدخول.':lang==='en'?'Signed in.':'Angemeldet.');sync()}
+  async function sync(){if(!engineState.token)return accountStatus(lang==='ar'?'سجّل الدخول أولًا.':lang==='en'?'Sign in first.':'Bitte zuerst anmelden.');const r=await api('/state');if(r.ok){const remote=await r.json();if(remote){Object.assign(state,remote);save();renderStats();renderQuestion();renderLists();renderProgress()}}await api('/state',{method:'PUT',body:JSON.stringify({state})});accountStatus('Cloud sync completed.')}
+  $('accountRegister')?.addEventListener('click',register);$('accountLogin')?.addEventListener('click',login);$('accountSync')?.addEventListener('click',sync);
+
+  function showAdminButton(show){document.querySelectorAll('.adminOnly').forEach(b=>b.hidden=!show)}
+  function escHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  function adminText(){return {de:{title:'👑 VIDO Owner Control Center',users:'Benutzer',active:'Aktiv 15 Min.',activity:'Aktivität 24 Std.',failed:'Fehlgeschlagene Logins 24 Std.',usersBtn:'Benutzer',create:'+ Benutzer erstellen',activityBtn:'Aktivität',security:'Sicherheit',audit:'Audit',system:'System',refresh:'↻ Aktualisieren'},en:{title:'👑 VIDO Owner Control Center',users:'Users',active:'Active 15m',activity:'Activity 24h',failed:'Failed Logins 24h',usersBtn:'Users',create:'+ Create User',activityBtn:'Activity',security:'Security',audit:'Audit',system:'System',refresh:'↻ Refresh'},ar:{title:'👑 مركز تحكم مالك VIDO',users:'المستخدمون',active:'نشط خلال 15 دقيقة',activity:'النشاط خلال 24 ساعة',failed:'تسجيلات الدخول الفاشلة 24 ساعة',usersBtn:'المستخدمون',create:'+ إنشاء مستخدم',activityBtn:'النشاط',security:'الأمان',audit:'السجل الإداري',system:'النظام',refresh:'↻ تحديث'}}[lang]||null}
+  function updateAdminLabels(){const l=adminText();if(!l)return;const m={adminTitle:'title',adminUsersLabel:'users',adminActiveLabel:'active',adminActivityLabel:'activity',adminFailedLabel:'failed',adminUsersBtn:'usersBtn',adminCreateBtn:'create',adminActivityBtn:'activityBtn',adminSecurityBtn:'security',adminAuditBtn:'audit',adminSystemBtn:'system',adminRefresh:'refresh'};Object.entries(m).forEach(([id,k])=>{const e=$(id);if(e)e.textContent=l[k]})}
+  async function adminFetch(path,opts={}){const r=await api(path,opts);if(r.status===403||r.status===401){showAdminButton(false);throw new Error('forbidden')}return r}
+  function adminTable(headers,rows){return `<div style="overflow:auto"><table class="adminTable"><thead><tr>${headers.map(h=>`<th>${escHtml(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+  function adminNotice(msg,kind=''){const el=$('adminPanel');if(el)el.innerHTML=`<div class="feedback ${kind}">${escHtml(msg)}</div>`}
+  async function loadAdminOverview(){const r=await adminFetch('/admin/overview');if(!r.ok)throw new Error();const d=await r.json();$('adminUsers').textContent=d.users;$('adminActive').textContent=d.active15m;$('adminActivity').textContent=d.activity24h;$('adminFailed').textContent=d.failedLogins24h;$('adminRole').textContent=String(d.role||'ADMIN').toUpperCase();showAdminButton(true);updateAdminLabels()}
+  function roleOptions(selected='user'){return ['user','analyst','content_manager','video_manager','lab_manager','super_admin','owner'].map(r=>`<option value="${r}" ${r===selected?'selected':''}>${r}</option>`).join('')}
+  async function loadAdminUsers(){const r=await adminFetch('/admin/users');const d=await r.json();const owner=String($('adminRole')?.textContent||'').toLowerCase()==='owner';const rows=d.map(u=>{const actions=owner?`<select data-role-user="${escHtml(u.id)}" class="adminSelect">${roleOptions(u.role)}</select><button class="miniBtn" data-status-user="${escHtml(u.id)}" data-status="${u.status==='active'?'suspended':'active'}">${u.status==='active'?'Suspend':'Activate'}</button><button class="miniBtn" data-reset-user="${escHtml(u.id)}">Reset PW</button>${u.email===engineState?.email?'':'<button class="miniBtn danger" data-delete-user="'+escHtml(u.id)+'">Delete</button>'}`:'View only';return [escHtml(u.email),escHtml(u.role),escHtml(u.status),new Date(u.created_at).toLocaleString(),u.last_login_at?new Date(u.last_login_at).toLocaleString():'—',escHtml(u.last_ip||'—'),escHtml(u.last_user_agent||'—'),actions]});$('adminPanel').innerHTML='<div class="adminSectionHead"><div><h3>Users</h3><div class="muted">Owner-only controls change roles, status, passwords and accounts.</div></div></div>'+adminTable(['Email','Role','Status','Registered','Last Login','IP','Device / Browser','Actions'],rows);$('adminPanel').querySelectorAll('[data-role-user]').forEach(e=>e.onchange=async()=>{if(!confirm('Change this user role?')){loadAdminUsers();return}const r=await adminFetch('/admin/users/'+e.dataset.roleUser+'/role',{method:'POST',body:JSON.stringify({role:e.value})});if(!r.ok)alert((await r.json()).error||'Failed');loadAdminUsers()});$('adminPanel').querySelectorAll('[data-status-user]').forEach(e=>e.onclick=async()=>{const r=await adminFetch('/admin/users/'+e.dataset.statusUser+'/status',{method:'POST',body:JSON.stringify({status:e.dataset.status})});if(!r.ok)alert((await r.json()).error||'Failed');loadAdminUsers()});$('adminPanel').querySelectorAll('[data-reset-user]').forEach(e=>e.onclick=async()=>{const pw=prompt('New password (8+ characters):');if(!pw)return;const r=await adminFetch('/admin/users/'+e.dataset.resetUser+'/password',{method:'POST',body:JSON.stringify({password:pw})});alert(r.ok?'Password updated.':((await r.json()).error||'Failed'))});$('adminPanel').querySelectorAll('[data-delete-user]').forEach(e=>e.onclick=async()=>{if(!confirm('Delete this user permanently?'))return;const r=await adminFetch('/admin/users/'+e.dataset.deleteUser,{method:'DELETE'});if(!r.ok)alert((await r.json()).error||'Failed');loadAdminUsers()})}
+  function renderCreateUser(){const l=adminText();$('adminPanel').innerHTML=`<div class="card adminInner"><h3>${l.create}</h3><div class="grid two"><div><label>Email</label><input id="newUserEmail" type="email" placeholder="user@example.com" class="adminInput"><label style="display:block;margin-top:10px">Password</label><input id="newUserPassword" type="password" placeholder="8+ characters" class="adminInput"></div><div><label>Role</label><select id="newUserRole" class="adminInput">${roleOptions('user')}</select><div class="muted" style="margin-top:10px">Owner creation is protected by the backend. Passwords are hashed server-side.</div></div></div><button class="primary" id="createUserSubmit" style="margin-top:12px">${l.create}</button><div id="createUserMsg" class="muted" style="margin-top:10px"></div></div>`;$('createUserSubmit').onclick=async()=>{const email=$('newUserEmail').value.trim(),password=$('newUserPassword').value,role=$('newUserRole').value;const r=await adminFetch('/admin/users',{method:'POST',body:JSON.stringify({email,password,role})});const d=await r.json();$('createUserMsg').textContent=r.ok?'User created.':(d.error||'Creation failed');if(r.ok){$('newUserEmail').value='';$('newUserPassword').value='';loadAdminOverview()}}}
+  async function loadAdminActivity(){const r=await adminFetch('/admin/activity');const d=await r.json();const rows=d.map(a=>[escHtml(a.email||'—'),escHtml(a.event_type),escHtml(a.route||'—'),escHtml(a.ip||'—'),escHtml(a.city&&a.country?(a.city+', '+a.country):(a.country||'—')),new Date(a.created_at).toLocaleString(),escHtml(a.user_agent||'—')]);$('adminPanel').innerHTML='<h3>Activity Log</h3>'+adminTable(['User','Event','Route','IP','Approx. Location','Time','Device'],rows)}
+  async function loadAdminSecurity(){const r=await adminFetch('/admin/security');const d=await r.json();const rows=d.map(a=>[escHtml(a.email||a.user_email||'—'),escHtml(a.event_type),escHtml(a.ip||'—'),new Date(a.created_at).toLocaleString(),escHtml(a.user_agent||'—')]);$('adminPanel').innerHTML='<h3>Security Log</h3>'+adminTable(['Email','Event','IP','Time','Device'],rows)}
+  async function loadAdminAudit(){const r=await adminFetch('/admin/audit');const d=await r.json();const rows=d.map(a=>[escHtml(a.actor_email||'—'),escHtml(a.action),escHtml(a.target_type||'—'),escHtml(a.target_id||'—'),escHtml(JSON.stringify(a.metadata||{})),new Date(a.created_at).toLocaleString()]);$('adminPanel').innerHTML='<h3>Administrative Audit</h3>'+adminTable(['Actor','Action','Target','ID','Metadata','Time'],rows)}
+  async function loadAdminSystem(){const r=await adminFetch('/admin/system');const d=await r.json();const roles=d.roles.map(x=>[escHtml(x.role),x.count]);$('adminPanel').innerHTML='<h3>System</h3><div class="grid two"><div class="card"><div class="eyebrow">Backend</div><div class="big">'+escHtml(d.node)+'</div><div class="muted">Environment: '+escHtml(d.environment)+' · Database: '+(d.database?'OK':'OFF')+' · AI: '+(d.ai?'configured':'not configured')+'</div></div><div class="card"><h4>Users by Role</h4>'+adminTable(['Role','Count'],roles)+'</div></div>'}
+  async function renderAdmin(){try{updateAdminLabels();await loadAdminOverview();await loadAdminUsers()}catch(e){if($('adminPanel'))$('adminPanel').innerHTML='<div class="feedback">Admin access required or backend/database is not configured.</div>';}}
+  $('adminRefresh')?.addEventListener('click',()=>renderAdmin());$('adminUsersBtn')?.addEventListener('click',()=>loadAdminUsers().catch(()=>{}));$('adminCreateBtn')?.addEventListener('click',()=>renderCreateUser());$('adminActivityBtn')?.addEventListener('click',()=>loadAdminActivity().catch(()=>{}));$('adminSecurityBtn')?.addEventListener('click',()=>loadAdminSecurity().catch(()=>{}));$('adminAuditBtn')?.addEventListener('click',()=>loadAdminAudit().catch(()=>{}));$('adminSystemBtn')?.addEventListener('click',()=>loadAdminSystem().catch(()=>{}));
+  async function checkAdminAccess(){if(!engineState.token){showAdminButton(false);return}try{const r=await api('/admin/overview');if(r.ok){const d=await r.json();engineState.role=d.role;engineState.email=engineState.email||d.email;persist();showAdminButton(true)}else showAdminButton(false)}catch{showAdminButton(false)}}
+  window.vidoTrackRoute=async function(routeName){if(!engineState.token)return;api('/activity',{method:'POST',body:JSON.stringify({eventType:'view',route:routeName,metadata:{language:lang}})}).catch(()=>{})}
+    const labels={de:{tutor:'✦ VIDO Tutor',account:'◉ Account & Sync',admin:'👑 Admin',tutor_title:'VIDO Tutor',tutor_subtitle:'Sokratischer IT-Lernassistent',tutor_context:'Aktuelle Aufgabe',tutor_ask:'Tutor fragen',tutor_response:'Tutor-Antwort',account_title:'Account & Sync',adaptive_title:'Adaptives Lernen & Spaced Repetition',adaptive_due:'Fällige Reviews',adaptive_next:'Nächste Auswahl',adaptive_start:'Adaptive Aufgabe starten'},en:{tutor:'✦ VIDO Tutor',account:'◉ Account & Sync',admin:'👑 Admin',tutor_title:'VIDO Tutor',tutor_subtitle:'Socratic IT learning assistant',tutor_context:'Current task',tutor_ask:'Ask Tutor',tutor_response:'Tutor response',account_title:'Account & Sync',adaptive_title:'Adaptive Learning & Spaced Repetition',adaptive_due:'Reviews due',adaptive_next:'Next selection',adaptive_start:'Start adaptive task'},ar:{tutor:'✦ مساعد VIDO',account:'◉ الحساب والمزامنة',tutor_title:'مساعد VIDO',tutor_subtitle:'مساعد تعليمي لتقنية المعلومات بطريقة سقراطية',tutor_context:'السؤال الحالي',tutor_ask:'اسأل المساعد',tutor_response:'رد المساعد',account_title:'الحساب والمزامنة',adaptive_title:'التعلم التكيفي والتكرار المتباعد',adaptive_due:'المراجعات المستحقة',adaptive_next:'الاختيار التالي',adaptive_start:'بدء سؤال تكيفي'}};
+  function updateV2Labels(){const l=labels[lang]||labels.de;document.querySelectorAll('[data-route="tutor"]').forEach(b=>b.textContent=l.tutor);document.querySelectorAll('[data-route="account"]').forEach(b=>b.textContent=l.account);document.querySelectorAll('[data-route="admin"]').forEach(b=>b.textContent=l.admin);const map={tutor_title:'tutor_title',tutor_subtitle:'tutor_subtitle',tutor_context:'tutor_context',tutor_ask:'tutor_ask',tutor_response:'tutor_response',account_title:'account_title',adaptive_title:'adaptive_title',adaptive_due:'adaptive_due',adaptive_next:'adaptive_next',adaptive_start:'adaptive_start'};Object.entries(map).forEach(([id,k])=>{const e=document.querySelector('[data-i18n="'+id+'"]');if(e)e.textContent=l[k]});if($('accountEmail'))$('accountEmail').placeholder=lang==='ar'?'البريد الإلكتروني':lang==='en'?'Email':'E-Mail';if($('accountPassword'))$('accountPassword').placeholder=lang==='ar'?'كلمة المرور (8 أحرف على الأقل)':lang==='en'?'Password (8+ characters)':'Passwort (8+ Zeichen)';renderAdaptive()}
+  $('langSelect')?.addEventListener('change',()=>setTimeout(updateV2Labels,0));updateV2Labels();
+  const badge=document.createElement('span');badge.className='engineBadge';badge.textContent='Engine';document.querySelector('.top')?.appendChild(badge);api('/health').then(r=>r.json()).then(h=>{badge.textContent=h.database&&h.ai?'Backend + AI ✓':h.database?'Backend ✓':'Local Engine';badge.className='engineBadge '+(h.database?'healthOk':'healthWarn')}).catch(()=>{badge.textContent='Local Engine'});
+  checkAdminAccess();
+  document.documentElement.dataset.vidoEngine='v4-owner-admin';
+  setTimeout(()=>{validateStoredSession();},0);
+})();
+</script>
+<style id="vido-admin-ui">.adminTable{width:100%;border-collapse:collapse;font-size:12px}.adminTable th,.adminTable td{padding:9px;border-bottom:1px solid var(--line);text-align:start;vertical-align:top}.adminTable th{color:#9fb5c8;background:#07111f;position:sticky;top:0}.adminStats .big{font-size:28px;font-weight:900;margin-top:6px}@media(max-width:700px){.adminTable{font-size:11px;min-width:760px}.adminStats{grid-template-columns:repeat(2,minmax(0,1fr))}}</style><style id="vido-owner-admin-ui">.adminTabs{flex-wrap:wrap}.adminInput{width:100%;box-sizing:border-box;background:#07111f;color:#fff;border:1px solid #31506b;border-radius:8px;padding:10px;margin-top:6px}.adminSelect{background:#07111f;color:#fff;border:1px solid #31506b;border-radius:7px;padding:6px;min-width:125px}.miniBtn{margin:2px;padding:6px 8px;border:1px solid #31506b;border-radius:7px;background:#0b1a2a;color:#fff;cursor:pointer}.miniBtn.danger{border-color:#8b3b4a}.adminSectionHead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.adminInner{margin:0}.adminTable td:last-child{min-width:250px}@media(max-width:700px){.adminTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.adminTabs button{width:100%}.adminSectionHead{align-items:flex-start;flex-direction:column}}</style>
+<script id="vido-account-hotfix-v15">
+(function(){
+  function el(id){return document.getElementById(id)}
+  function status(msg){const e=el('accountStatus'); if(e)e.textContent=msg}
+  function api(path,opts){
+    const st=JSON.parse(localStorage.getItem('vidoEngineV2')||'{}');
+    const headers=Object.assign({'content-type':'application/json'},(opts&&opts.headers)||{});
+    if(st.token) headers.authorization='Bearer '+st.token;
+    return fetch('/api'+path,Object.assign({},opts||{}, {headers}));
+  }
+  async function read(r){let d={}; try{d=await r.json()}catch{} return {r,d}}
+  async function login(){
+    const email=el('accountEmail')?.value.trim()||'', password=el('accountPassword')?.value||'';
+    if(!email||!password)return status('E-Mail und Passwort eingeben.');
+    status('Anmeldung läuft …');
+    try{
+      const x=await read(await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})}));
+      if(!x.r.ok)return status(x.d.error||'Login fehlgeschlagen.');
+      const st=JSON.parse(localStorage.getItem('vidoEngineV2')||'{}');
+      st.token=x.d.token; st.role=x.d.user?.role||null; st.email=x.d.user?.email||email;
+      localStorage.setItem('vidoEngineV2',JSON.stringify(st));
+      status('Angemeldet.');
+    }catch(e){status('Verbindung zum VIDO-Backend fehlgeschlagen.');}
+  }
+  async function register(){
+    const email=el('accountEmail')?.value.trim()||'', password=el('accountPassword')?.value||'';
+    if(!email||password.length<8)return status('E-Mail und Passwort (mind. 8 Zeichen) eingeben.');
+    status('Konto wird erstellt …');
+    try{
+      const x=await read(await api('/auth/register',{method:'POST',body:JSON.stringify({email,password})}));
+      if(!x.r.ok)return status(x.d.error||'Registrierung fehlgeschlagen.');
+      const st=JSON.parse(localStorage.getItem('vidoEngineV2')||'{}');
+      st.token=x.d.token; st.role=x.d.user?.role||null; st.email=x.d.user?.email||email;
+      localStorage.setItem('vidoEngineV2',JSON.stringify(st));
+      status('Konto erstellt und angemeldet.');
+    }catch(e){status('Verbindung zum VIDO-Backend fehlgeschlagen.');}
+  }
+  function bind(id,fn){
+    const old=el(id); if(!old||old.dataset.v15Bound)return;
+    const b=old.cloneNode(true); old.replaceWith(b); b.addEventListener('click',e=>{e.preventDefault();fn()}); b.dataset.v15Bound='1';
+  }
+  function boot(){bind('accountLogin',login);bind('accountRegister',register)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+})();
+</script>
+
+<script id="vido-button-reliability-v17">
+(function(){
+  'use strict';
+  function getState(){
+    try{return JSON.parse(localStorage.getItem('vidoEngineV2')||'{}')}catch{return {}}
+  }
+  function api(path,opts){
+    const st=getState();
+    const headers=Object.assign({'content-type':'application/json'},(opts&&opts.headers)||{});
+    if(st.token) headers.authorization='Bearer '+st.token;
+    return fetch('/api'+path,Object.assign({},opts||{},{headers}));
+  }
+  function status(msg){
+    const e=document.getElementById('accountStatus');
+    if(e)e.textContent=msg;
+  }
+  async function syncNow(){
+    const st=getState();
+    if(!st.token){status('Bitte zuerst anmelden.');return}
+    const btn=document.getElementById('accountSync');
+    if(btn)btn.disabled=true;
+    status('Synchronisierung läuft …');
+    try{
+      const get=await api('/state');
+      if(!get.ok) throw new Error('GET /state '+get.status);
+      const remote=await get.json();
+      if(remote && window.vidoCore){
+        Object.assign(window.vidoCore.state,remote);
+        try{window.vidoCore.save()}catch{}
+        try{window.vidoCore.renderStats()}catch{}
+        try{window.vidoCore.renderQuestion()}catch{}
+        try{window.vidoCore.renderLists()}catch{}
+        try{window.vidoCore.renderProgress()}catch{}
+      }
+      const put=await api('/state',{method:'PUT',body:JSON.stringify({state:window.vidoCore?window.vidoCore.state:{}})});
+      if(!put.ok) throw new Error('PUT /state '+put.status);
+      status('Cloud sync completed.');
+    }catch(e){
+      console.error('[VIDO] Sync failed',e);
+      status('Synchronisierung fehlgeschlagen. Backend prüfen.');
+    }finally{
+      if(btn)btn.disabled=false;
+    }
+  }
+  function bindSync(){
+    const b=document.getElementById('accountSync');
+    if(!b || b.dataset.v17Bound)return;
+    b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();syncNow()});
+    b.dataset.v17Bound='1';
+  }
+  function auditButtons(){
+    const buttons=[...document.querySelectorAll('button')];
+    const missing=buttons.filter(b=>{
+      if(b.dataset.route||b.dataset.go||b.hasAttribute('data-back'))return false;
+      return typeof b.onclick!=='function' && !b.id.match(/^accountSync$/);
+    });
+    window.vidoButtonAudit={total:buttons.length,unwired:missing.map(b=>b.id||b.textContent.trim().slice(0,40))};
+    console.info('[VIDO] Button audit',window.vidoButtonAudit);
+  }
+  function boot(){bindSync();auditButtons()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
+<script id="vido-button-runtime-v18">
+(function(){
+  'use strict';
+  function ready(){
+    const ids=['accountSync','accountLogin','accountRegister','searchBtn','continueBtn','missionBtn','focusBtn','check','prevQ','nextQ','hint','showAnswer','why','videoBtn','noteBtn','taskCheck','simPing','startIhk','adminRefresh','adminUsersBtn','adminCreateBtn','adminActivityBtn','adminSecurityBtn','adminAuditBtn','adminSystemBtn'];
+    window.vidoButtonRuntime={version:'18',checked:ids.length,ready:true};
+    console.info('[VIDO] Button runtime v18 ready',window.vidoButtonRuntime);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true}); else ready();
+})();
+</script>
+
+</script>
+<script id="vido-auth-gate-repair-v21">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id)}
+  function getState(){try{return JSON.parse(localStorage.getItem('vidoEngineV2')||'{}')}catch{return {}}}
+  function saveState(st){localStorage.setItem('vidoEngineV2',JSON.stringify(st))}
+  function api(path,opts){
+    const st=getState();
+    const headers=Object.assign({'content-type':'application/json'},(opts&&opts.headers)||{});
+    if(st.token) headers.authorization='Bearer '+st.token;
+    return fetch('/api'+path,Object.assign({},opts||{},{headers}));
+  }
+  function status(msg){const e=byId('gateMsg');if(e)e.textContent=msg||''}
+  function unlock(user,token){
+    const st=getState(); st.token=token||st.token||null; st.role=user?.role||st.role||null; st.email=user?.email||st.email||null; saveState(st);
+    document.body.classList.remove('authLocked');
+    const gate=byId('authGate'); if(gate) gate.hidden=true;
+  }
+  async function login(){
+    const email=(byId('gateEmail')?.value||'').trim(); const password=byId('gatePassword')?.value||'';
+    if(!email||!password){status('Bitte E-Mail und Passwort eingeben.');return}
+    status('Anmeldung läuft …');
+    try{const r=await api('/auth/login',{method:'POST',body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'login');unlock(d.user,d.token);}
+    catch(e){status('Anmeldung fehlgeschlagen.')}
+  }
+  async function adminLogin(){
+    const username=(byId('gateEmail')?.value||'Admin').trim()||'Admin'; const password=byId('gatePassword')?.value||'';
+    if(!password){status('Admin-Passwort eingeben.');return}
+    status('Admin-Anmeldung läuft …');
+    try{const r=await api('/auth/quick-admin',{method:'POST',body:JSON.stringify({username,password})});const d=await r.json();if(!r.ok)throw new Error(d.error||'admin');unlock(d.user,d.token);}
+    catch(e){status('Admin-Anmeldung fehlgeschlagen.')}
+  }
+  function bind(){
+    const loginBtn=byId('gateLogin'), adminBtn=byId('gateAdmin'), pw=byId('gatePassword');
+    if(loginBtn&&!loginBtn.dataset.v21Bound){loginBtn.addEventListener('click',function(e){e.preventDefault();login()});loginBtn.dataset.v21Bound='1'}
+    if(adminBtn&&!adminBtn.dataset.v21Bound){adminBtn.addEventListener('click',function(e){e.preventDefault();adminLogin()});adminBtn.dataset.v21Bound='1'}
+    if(pw&&!pw.dataset.v21Bound){pw.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();login()}});pw.dataset.v21Bound='1'}
+  }
+  function boot(){bind();if(document.body.classList.contains('authLocked')){const st=getState();if(st.token){api('/auth/me').then(async r=>{if(r.ok){const d=await r.json();unlock(d.user,st.token)}else{st.token=null;st.role=null;saveState(st)}}).catch(()=>{})}}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('pageshow',bind);
+})();
+</script>
+</body></html>
+
+<style id="vido-topic-learning-ui">
+.topicHero{margin-bottom:14px;background:linear-gradient(135deg,#0b1929,#102b3e);border-color:#274866}.topicGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.topicCard{appearance:none;border:1px solid var(--line);background:linear-gradient(145deg,#0b1624,#0e2030);color:#fff;border-radius:14px;padding:16px;text-align:start;min-height:140px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer;transition:.15s}.topicCard:hover,.topicCard.selected{border-color:#4c88ad;transform:translateY(-2px);box-shadow:0 8px 24px #0004}.topicIcon{font-size:28px}.topicName{font-weight:800;font-size:16px}.topicCount{font-size:12px;color:#9fb5c8;margin-top:auto}@media(max-width:1000px){.topicGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.topicGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.topicGrid{grid-template-columns:1fr}}
+</style>

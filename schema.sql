@@ -18,12 +18,7 @@ CREATE TABLE IF NOT EXISTS learning_events (
   correct BOOLEAN NOT NULL,
   answer_time_ms INTEGER NOT NULL DEFAULT 0,
   hints_used INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('owner','super_admin','content_manager','video_manager','lab_manager','analyst','user')),
-  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended')),
-  last_login_at TIMESTAMPTZ,
-  last_ip INET,
-  last_user_agent TEXT
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_learning_events_user ON learning_events(user_id, created_at DESC);
 CREATE TABLE IF NOT EXISTS mastery (

@@ -1,0 +1,8 @@
+V32 - Authentication UX enhancement
+- Built directly from V31; immutable foundation preserved.
+- Added show/hide password controls to the login gate and Account password field.
+- Added multilingual “Keep me signed in / Angemeldet bleiben / البقاء مسجّل الدخول” option.
+- Remembered sessions use localStorage only when explicitly enabled; normal sessions remain sessionStorage-based.
+- Logout clears the remembered session.
+- Remembered-session restoration validates the JWT through /api/auth/me before restoring the session.
+- Updated Service Worker cache version to V32.

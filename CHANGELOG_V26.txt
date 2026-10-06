@@ -1,0 +1,8 @@
+VIDO_CHANGEABLE_BUILD_V26
+
+- Removed the duplicate V21 authentication-gate repair binding that could attach a second click/Enter handler to Login and Admin controls.
+- Kept the V25 authentication implementation as the single source for Login, Registration, Admin Schnelllogin and Logout bindings.
+- Bumped the Service Worker cache identifier from build-v24 to build-v25 so the V25 deployment does not reuse the old cache namespace.
+- Preserved V25 registration, login, admin, logout, learning state, database volumes, PWA files and foundation features.
+- Verification performed before packaging: JavaScript syntax, inline-script syntax, HTML parsing, duplicate IDs, authentication binding uniqueness, Service Worker version consistency, question-bank audit, foundation-marker checks and ZIP integrity.
+- Browser UI + PostgreSQL runtime testing in this environment is not claimed: Docker is unavailable here and the headless browser was blocked by the execution environment's administrator policy.

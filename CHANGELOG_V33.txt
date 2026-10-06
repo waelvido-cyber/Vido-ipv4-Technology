@@ -1,0 +1,7 @@
+V33 - Password UI duplicate-eye fix
+
+- Fixed the authentication password confirmation row so it is strictly hidden outside registration mode.
+- Prevented the second password-eye control from appearing on the normal login screen.
+- Preserved the V32 password visibility and “Angemeldet bleiben” functionality.
+- Updated Service Worker cache version to V33.
+- No foundation features removed or changed.

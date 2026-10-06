@@ -1,0 +1,8 @@
+VIDO_CHANGEABLE_BUILD_V20
+
+- Added a mandatory authentication gate: the learning platform remains inaccessible until a valid authenticated session exists.
+- Added server-side /api/auth/me session validation so stale/invalid tokens no longer unlock the UI.
+- Added Quick Admin Login backed by ADMIN_USERNAME/ADMIN_PASSWORD environment variables; credentials are never hardcoded into the frontend.
+- Added security logging for Quick Admin Login success/failure.
+- Preserved V19 database, Cloud Sync, Owner bootstrap and existing learning features.
+- Updated Service Worker cache query to v20.

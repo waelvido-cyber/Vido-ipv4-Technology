@@ -1,0 +1,6 @@
+VIDO CHANGEABLE BUILD V19
+
+Fix:
+- Owner bootstrap now updates the existing owner's password_hash when OWNER_EMAIL already exists.
+- This allows the OWNER_PASSWORD from .env to be used for login after container recreation.
+- No foundation feature or database volume configuration was removed.

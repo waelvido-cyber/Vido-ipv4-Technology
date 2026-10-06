@@ -1,0 +1,7 @@
+VIDO CHANGEABLE BUILD V17
+- Fixed the cross-script JavaScript scope failure that prevented the adaptive/tutor/account extension script from reaching its button bindings.
+- Added an explicit VIDO core bridge for shared engine state/functions.
+- Added resilient Cloud Sync handling with visible success/failure status.
+- Added a runtime button audit for verification.
+- Preserved the V16 PostgreSQL and node_modules Docker volumes when running V17 from a new folder.
+- No foundation contract file was modified.

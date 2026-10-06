@@ -1,0 +1,7 @@
+VIDO CHANGELOG V28
+
+Fix: authentication extension called applyAuthGateText() from setStatic() before that function existed in its later script/IIFE scope. This ReferenceError stopped the main engine before window.vidoCore was created.
+
+Fix: auth gate labels are now initialized inside the authentication extension after its functions are defined, and language changes update those labels from the same scope.
+
+No foundation feature removed. Based directly on V27 as the latest mutable build.

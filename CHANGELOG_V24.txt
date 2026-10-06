@@ -1,0 +1,8 @@
+VIDO_CHANGEABLE_BUILD_V24
+
+- Added public account registration directly on the authentication gate.
+- Added password confirmation for new accounts.
+- Registration creates a normal user account in PostgreSQL and signs the user in immediately.
+- Added registration validation and rate limiting.
+- Preserved Admin Quick Login, normal login, logout, learning state, Cloud Sync, and foundation features.
+- Bumped service-worker cache marker to V24.

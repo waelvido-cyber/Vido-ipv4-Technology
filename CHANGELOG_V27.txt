@@ -1,0 +1,16 @@
+VIDO Technology — V27
+
+Fix: main engine initialization called setLogoutVisible() before the auth extension script defined its function. This ReferenceError stopped initialization and prevented window.vidoCore from being created, which left the UI buttons inactive.
+
+Changes:
+- Define the logout visibility helper in the main engine scope before initialization.
+- Keep the later auth helper local to its auth extension scope.
+- Bump the service-worker cache identifier and registration query to V27.
+- Preserve the V26 architecture and features; no foundation feature removed.
+
+Verification target:
+- JS syntax checks
+- Duplicate-ID check
+- Core bridge ordering check
+- Service-worker version consistency
+- ZIP integrity

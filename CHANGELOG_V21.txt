@@ -1,0 +1,7 @@
+VIDO_CHANGEABLE_BUILD_V21
+
+- Fixed mandatory auth gate button binding with an independent DOM-safe runtime.
+- Fixed Quick Admin Login button binding even if another frontend script fails.
+- Added ADMIN_USERNAME and ADMIN_PASSWORD to .env.example.
+- Preserved V20 backend, database, Cloud Sync, and learning features.
+- Bumped service worker cache marker to V21.

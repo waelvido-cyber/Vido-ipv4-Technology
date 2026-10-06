@@ -1,0 +1,10 @@
+VIDO_CHANGEABLE_BUILD_V23
+
+- Added a visible Sign out / Abmelden control to the authenticated application header.
+- Logout clears the VIDO authentication session from sessionStorage and returns to the mandatory authentication gate.
+- Logout hides Owner/Admin navigation until a fresh authenticated session is established.
+- Added DE/EN/AR labels for the logout control.
+- Preserved learning state in localStorage; authentication remains session-scoped.
+- Preserved V21/V22 authentication gate, Quick Admin, Cloud Sync, learning engine, Cisco Simulator, IHK mode, Admin Control Center, questions and PWA.
+- Updated service-worker cache marker to V23.
+- Ensured docker-compose passes ADMIN_USERNAME and ADMIN_PASSWORD to the backend.

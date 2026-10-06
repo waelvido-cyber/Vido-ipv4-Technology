@@ -1,0 +1,8 @@
+V30 - Stable frontend scope and initialization repair
+- Built directly from the latest mutable V29 build.
+- Removed cross-script dependence on the core closure's `lang` and `t()` symbols from the V2/owner engine.
+- Added a local, validated language accessor and authentication translations to the V2/owner engine.
+- Added local grading and simulator logging helpers required by the V2 engine.
+- Kept Authentication, Registration, Quick Admin Login, Logout, Admin, Tutor, Adaptive Learning and Simulator flows intact.
+- Updated Service Worker cache and registration version to V30.
+- No foundation feature intentionally removed.

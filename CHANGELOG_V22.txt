@@ -1,0 +1,8 @@
+VIDO_CHANGEABLE_BUILD_V22
+
+- Changed authentication session storage from localStorage to sessionStorage for vidoEngineV2.
+- Login tokens are no longer persisted across a new browser session; learning/application state remains local-first.
+- Existing localStorage vidoEngineV2 tokens are intentionally ignored, forcing a fresh login.
+- Preserved V21 mandatory authentication gate and Quick Admin runtime.
+- Bumped service-worker cache marker to V22 to prevent stale frontend auth code.
+- Preserved backend, database volumes, Cloud Sync, and existing learning features.

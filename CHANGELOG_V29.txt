@@ -1,0 +1,5 @@
+V29 - Runtime scope repair
+- Fixed cross-script `lang` scope in the V2 engine.
+- Exposed V2 label refresh through `window.vidoUpdateV2Labels`.
+- Fixed language-change callback to use the shared label refresh safely.
+- Bumped service-worker cache/version reference to V29.

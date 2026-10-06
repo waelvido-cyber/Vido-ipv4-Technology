@@ -1,0 +1,20 @@
+VIDO CHANGEABLE BUILD V13 — LOCAL BACKEND + POSTGRESQL READY
+
+Built directly from V12. Foundation file unchanged.
+
+Added:
+- Docker Compose stack for PostgreSQL 16 + Node.js backend.
+- Windows start/stop scripts for Docker Desktop.
+- Persistent PostgreSQL volume.
+- Automatic schema initialization on first database creation.
+- Production JWT secret validation (minimum 32 characters).
+- Health endpoint now verifies actual database connectivity.
+- Cleaned learning_events schema so account fields are not duplicated there.
+- Simplified .env.example to the required deployment secrets and optional AI settings.
+
+Preserved:
+- VIDO dashboard, learning path, 300-question engine, Cisco Simulator, IHK mode, tutor, progress, help, account sync and Owner Control Center.
+- Foundation contract and V12 authentication/administration architecture.
+
+Next operational step:
+- Copy .env.example to .env, set OWNER_EMAIL / OWNER_PASSWORD / JWT_SECRET, install Docker Desktop, then run start-vido.bat.

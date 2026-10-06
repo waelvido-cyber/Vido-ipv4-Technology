@@ -1,0 +1,8 @@
+V31 - Deep audit and runtime-safety cleanup
+- Built directly from V30.
+- Removed malformed HTML tail: moved topic-learning CSS inside <head> and removed stray </script>.
+- Fixed Arabic V2 Admin label.
+- Fixed authentication registration-mode label mapping.
+- Added validation/network error handling to Account login and registration.
+- Service Worker no longer caches /api/ responses; cache version is V31.
+- Preserved the immutable foundation and all existing VIDO feature areas.

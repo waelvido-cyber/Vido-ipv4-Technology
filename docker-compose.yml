@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vido-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vido
+      POSTGRES_USER: vido_user
+      POSTGRES_PASSWORD: vido_change_me
+    volumes:
+      - vido_pgdata:/var/lib/postgresql/data
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vido_user -d vido"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "5432:5432"
+
+  app:
+    image: node:22-alpine
+    container_name: vido-app
+    restart: unless-stopped
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://vido_user:vido_change_me@postgres:5432/vido
+      JWT_SECRET: ${JWT_SECRET}
+      OWNER_EMAIL: ${OWNER_EMAIL}
+      OWNER_PASSWORD: ${OWNER_PASSWORD}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-Admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      AI_API_URL: ${AI_API_URL:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-}
+    volumes:
+      - .:/app
+      - vido_node_modules:/app/node_modules
+    command: sh -c "npm install --omit=dev && npm run server"
+    ports:
+      - "3000:3000"
+
+volumes:
+  vido_pgdata:
+    name: vido_changeable_build_v16_vido_pgdata
+  vido_node_modules:
+    name: vido_changeable_build_v16_vido_node_modules

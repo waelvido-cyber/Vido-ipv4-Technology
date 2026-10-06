@@ -1,0 +1,6 @@
+VIDO_CHANGEABLE_BUILD_V25
+
+- Fixed startup JavaScript temporal-dead-zone error caused by referencing engineState before its later engine scope initializes.
+- Authentication gate and all core UI event bindings now initialize normally.
+- Bumped service-worker query marker to V25.
+- Preserved V24 registration, login, admin, logout, learning state, database and foundation features.

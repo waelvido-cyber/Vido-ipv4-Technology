@@ -8,11 +8,14 @@ const { Pool } = pg;
 const app = express();
 app.use(express.json({limit:'1mb'}));
 app.use(express.static('.'));
-const pool = process.env.DATABASE_URL ? new Pool({connectionString:process.env.DATABASE_URL, ssl:process.env.NODE_ENV==='production'?{rejectUnauthorized:false}:false}) : null;
-const JWT_SECRET = process.env.JWT_SECRET || 'CHANGE_ME_IN_PRODUCTION';
+const pool = process.env.DATABASE_URL ? new Pool({connectionString:process.env.DATABASE_URL, ssl:false}) : null;
+const JWT_SECRET = process.env.JWT_SECRET || '';
+if (process.env.NODE_ENV === 'production' && JWT_SECRET.length < 32) { throw new Error('JWT_SECRET must be at least 32 characters in production'); }
 const AI_URL = process.env.AI_API_URL || '';
 const AI_KEY = process.env.AI_API_KEY || '';
 const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+const ADMIN_USERNAME = String(process.env.ADMIN_USERNAME || 'Admin').trim();
+const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
 const loginAttempts = new Map();
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 10;
@@ -31,13 +34,43 @@ async function ownerOnly(req,res,next){ if(!req.admin||req.admin.role!=='owner')
 function auth(req,res,next){ try { const h=req.headers.authorization||''; if(!h.startsWith('Bearer ')) throw new Error(); req.user=jwt.verify(h.slice(7),JWT_SECRET); next(); } catch { res.status(401).json({error:'unauthorized'}); } }
 function requireDb(res){ if(!pool){res.status(503).json({error:'DATABASE_URL is not configured'}); return false;} return true; }
 
-app.get('/api/health', async (_req,res)=>res.json({ok:true,backend:true,database:!!pool,ai:!!(AI_URL&&AI_KEY)}));
+app.get('/api/health', async (_req,res)=>{ let db=false; if(pool){ try{ await pool.query('SELECT 1'); db=true; }catch{} } res.status(db?200:503).json({ok:db,backend:true,database:db,ai:!!(AI_URL&&AI_KEY)}); });
 app.post('/api/auth/register', async (req,res)=>{
-  if(!requireDb(res)) return; const {email,password}=req.body||{};
-  if(!email||!password||password.length<8) return res.status(400).json({error:'email and password (8+ chars) required'});
-  try { const hash=await bcrypt.hash(password,12); const r=await pool.query('INSERT INTO users(email,password_hash) VALUES($1,$2) RETURNING id,email,role,status',[email.toLowerCase().trim(),hash]); await logSecurity({userId:r.rows[0].id,email:r.rows[0].email,eventType:'register',req}); await logActivity({userId:r.rows[0].id,eventType:'register',route:'/account',req}); res.status(201).json({token:token(r.rows[0]),user:r.rows[0]}); }
-  catch(e){res.status(409).json({error:e.code==='23505'?'email already registered':'registration failed'});}
+  if(!requireDb(res)) return; const email=String(req.body?.email||'').toLowerCase().trim(); const password=String(req.body?.password||'');
+  if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8) return res.status(400).json({error:'email and password (8+ chars) required'});
+  if(!loginAllowed(req,email)) return res.status(429).json({error:'too_many_registration_attempts'});
+  try { const hash=await bcrypt.hash(password,12); const r=await pool.query('INSERT INTO users(email,password_hash) VALUES($1,$2) RETURNING id,email,role,status',[email,hash]); clearLoginFailures(req,email); await logSecurity({userId:r.rows[0].id,email:r.rows[0].email,eventType:'register',req}); await logActivity({userId:r.rows[0].id,eventType:'register',route:'/account',req}); res.status(201).json({token:token(r.rows[0]),user:r.rows[0]}); }
+  catch(e){ if(e.code==='23505'){noteLoginFailure(req,email); return res.status(409).json({error:'email already registered'});} res.status(500).json({error:'registration failed'}); }
 });
+app.get('/api/auth/me', auth, async (req,res)=>{
+  if(!requireDb(res)) return;
+  const r=await pool.query('SELECT id,email,role,status FROM users WHERE id=$1',[req.user.sub]);
+  if(!r.rowCount || r.rows[0].status!=='active') return res.status(401).json({error:'unauthorized'});
+  res.json({user:r.rows[0]});
+});
+
+app.post('/api/auth/quick-admin', async (req,res)=>{
+  if(!requireDb(res)) return;
+  const username=String(req.body?.username||'').trim();
+  const password=String(req.body?.password||'');
+  if(!loginAllowed(req,username)){ await logSecurity({email:username||ADMIN_USERNAME,eventType:'quick_admin_login_rate_limited',req}); return res.status(429).json({error:'too_many_login_attempts'}); }
+  if(!ADMIN_PASSWORD || username!==ADMIN_USERNAME || password!==ADMIN_PASSWORD){
+    noteLoginFailure(req,username);
+    await logSecurity({email:username||ADMIN_USERNAME,eventType:'quick_admin_login_failed',req});
+    return res.status(401).json({error:'invalid admin credentials'});
+  }
+  const email=process.env.OWNER_EMAIL ? String(process.env.OWNER_EMAIL).toLowerCase().trim() : 'admin@vido.local';
+  const r=await pool.query('SELECT id,email,role,status FROM users WHERE email=$1',[email]);
+  if(!r.rowCount) return res.status(503).json({error:'owner account is not initialized'});
+  const user=r.rows[0];
+  if(user.status!=='active') return res.status(403).json({error:'account_suspended'});
+  await pool.query('UPDATE users SET last_login_at=NOW(),last_ip=$2,last_user_agent=$3 WHERE id=$1',[user.id,clientIp(req),ua(req)]);
+  clearLoginFailures(req,username);
+  await logSecurity({userId:user.id,email:user.email,eventType:'quick_admin_login_success',req});
+  await logActivity({userId:user.id,eventType:'quick_admin_login',route:'/login',req});
+  res.json({token:token({...user,role:'owner'}),user:{...user,role:'owner'}});
+});
+
 app.post('/api/auth/login', async (req,res)=>{
   if(!requireDb(res)) return; const {email,password}=req.body||{};
   const cleanEmail=String(email||'').toLowerCase().trim();
@@ -77,6 +110,6 @@ app.post('/api/tutor',auth,async(req,res)=>{
   catch(e){res.status(502).json({error:'AI request failed'});}
 });
 
-async function bootstrapOwner(){ if(!pool||!process.env.OWNER_EMAIL||!process.env.OWNER_PASSWORD)return; const email=process.env.OWNER_EMAIL.toLowerCase().trim(); const hash=await bcrypt.hash(process.env.OWNER_PASSWORD,12); await pool.query(`INSERT INTO users(email,password_hash,role,status) VALUES($1,$2,'owner','active') ON CONFLICT(email) DO UPDATE SET role='owner',status='active'`,[email,hash]); }
+async function bootstrapOwner(){ if(!pool||!process.env.OWNER_EMAIL||!process.env.OWNER_PASSWORD)return; const email=process.env.OWNER_EMAIL.toLowerCase().trim(); const hash=await bcrypt.hash(process.env.OWNER_PASSWORD,12); await pool.query(`INSERT INTO users(email,password_hash,role,status) VALUES($1,$2,'owner','active') ON CONFLICT(email) DO UPDATE SET password_hash=EXCLUDED.password_hash,role='owner',status='active'`,[email,hash]); }
 const port=Number(process.env.PORT||3000);
 app.listen(port,async()=>{try{await bootstrapOwner();console.log(`VIDO backend listening on http://localhost:${port}`)}catch(e){console.error('Owner bootstrap failed',e.message)}});
