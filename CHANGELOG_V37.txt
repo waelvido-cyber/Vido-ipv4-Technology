@@ -1,0 +1,7 @@
+V37 — Modern Login UI integration
+
+- Replaced the auth gate presentation with the supplied glassmorphism login design.
+- Preserved VIDO authentication IDs, backend API routes, Admin trigger, registration flow, remember-me flow, and password visibility behavior.
+- Added accessible focus states and semantic form controls.
+- Forgot-password link is intentionally non-destructive and reports that server-side password reset is not configured; no fake reset endpoint was added.
+- No .env or secrets included.
