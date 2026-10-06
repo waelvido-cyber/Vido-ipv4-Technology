@@ -1,0 +1,8 @@
+VIDO V35
+
+- Removed the always-visible Admin Schnelllogin button from the normal login screen.
+- Admin Schnelllogin appears only when the username field contains “Admin” (case-insensitive).
+- Admin quick-login always sends the canonical Admin username to the backend.
+- Backend quick-admin username matching is now case-insensitive while the password remains exact.
+- Preserved owner/admin role handling and all existing V34 features.
+- Updated Service Worker cache version to V35.

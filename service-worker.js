@@ -1,4 +1,4 @@
-const CACHE='vido-ui-20261004-foundation-v1-build-v33';
+const CACHE='vido-ui-20261004-foundation-v1-build-v35';
 const STATIC=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

@@ -52,9 +52,10 @@ app.get('/api/auth/me', auth, async (req,res)=>{
 app.post('/api/auth/quick-admin', async (req,res)=>{
   if(!requireDb(res)) return;
   const username=String(req.body?.username||'').trim();
+  const normalizedUsername=username.toLowerCase();
   const password=String(req.body?.password||'');
   if(!loginAllowed(req,username)){ await logSecurity({email:username||ADMIN_USERNAME,eventType:'quick_admin_login_rate_limited',req}); return res.status(429).json({error:'too_many_login_attempts'}); }
-  if(!ADMIN_PASSWORD || username!==ADMIN_USERNAME || password!==ADMIN_PASSWORD){
+  if(!ADMIN_PASSWORD || normalizedUsername!==ADMIN_USERNAME.toLowerCase() || password!==ADMIN_PASSWORD){
     noteLoginFailure(req,username);
     await logSecurity({email:username||ADMIN_USERNAME,eventType:'quick_admin_login_failed',req});
     return res.status(401).json({error:'invalid admin credentials'});
